@@ -11,7 +11,7 @@
 <header class="topbar">
   <a class="brand" href="./">Invitation<span>Studio</span></a>
   <nav class="top-actions">
-    <button class="ghost" id="loadBtn">Mes créations</button>
+    <button class="ghost" id="loadBtn">Mes créations</button><button class="ghost" id="organizerBtn">Espace organisateur</button>
     <button class="primary" id="shareTop">Partager</button>
   </nav>
 </header>
@@ -97,7 +97,7 @@
   </div>
 
   <div class="save-row">
-    <button class="primary large" id="saveBtn">Enregistrer</button>
+    <button class="primary large" id="saveBtn">Enregistrer</button><button class="primary large" id="publishBtn">Publier & partager</button>
     <button class="ghost large" id="resetBtn">Réinitialiser</button>
   </div>
 </section>
@@ -151,7 +151,7 @@
   <div class="response-actions"><button class="primary" id="sendResponse">Envoyer la réponse</button><button class="ghost" id="copyResponse">Copier la réponse</button></div>
   <p class="hint">Aucune donnée n’est envoyée automatiquement vers un serveur dans cette version gratuite sans backend.</p>
 </div></div>
-<div class="toast" id="toast"></div>
-<script src="app.js"></script>
+<div class="modal hidden" id="organizerModal"><div class="modal-card organizer-card"><button class="close" id="closeOrganizer">×</button><div id="authView"><p class="eyebrow">ESPACE ORGANISATEUR</p><h2>Gérer mes invitations</h2><p class="hint">Compte gratuit pour retrouver les invitations et leurs réponses sur plusieurs appareils.</p><label>E-mail<input id="authEmail" type="email" autocomplete="email"></label><label>Mot de passe<input id="authPassword" type="password" autocomplete="current-password"></label><div class="response-actions"><button class="primary" id="loginBtn">Se connecter</button><button class="ghost" id="signupBtn">Créer un compte</button></div><p class="hint" id="authStatus"></p></div><div id="dashboardView" class="hidden"><p class="eyebrow">TABLEAU DE BORD</p><h2>Mes invitations</h2><div id="dashboardList"></div><div class="response-actions"><button class="ghost" id="refreshDashboard">Actualiser</button><button class="ghost" id="logoutBtn">Se déconnecter</button></div></div></div></div><div class="toast" id="toast"></div>
+<script src="firebase-config.js"></script><script type="module" src="firebase-app.js"></script><script src="app.js"></script>
 </body>
 </html>
