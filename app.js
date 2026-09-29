@@ -20,7 +20,7 @@ $("invitation").className="invitation theme-"+data.theme;
 fields.forEach(k=>$(k).addEventListener("input",render));
 document.querySelectorAll(".theme").forEach(b=>b.onclick=()=>{data.theme=b.dataset.theme;document.querySelectorAll(".theme").forEach(x=>x.classList.remove("active"));b.classList.add("active");render()});
 function encoded(){return btoa(unescape(encodeURIComponent(JSON.stringify({...read(),theme:data.theme})))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","")}
-function decode(s){try{return JSON.parse(decodeURIComponent(escape(atob(s.replaceAll("-","+").replaceAll("_","/")))))}catch{return null}}
+function decode(s){try{let x=s.replaceAll("-","+").replaceAll("_","/");x+="=".repeat((4-x.length%4)%4);return JSON.parse(decodeURIComponent(escape(atob(x))))}catch{return null}}
 function makeUrl(){let u=new URL(location.href);u.search="";u.hash="invite="+encoded();return u.href}
 function toast(t){$("toast").textContent=t;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)}
 $("shareBtn").onclick=async()=>{read();let u=makeUrl();$("shareUrl").value=u;try{await navigator.clipboard.writeText(u);toast("Lien créé et copié")}catch{toast("Lien créé")}};
@@ -33,4 +33,28 @@ function showSaved(){let list=JSON.parse(localStorage.getItem("invitations")||"[
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 $("loadBtn").onclick=()=>{$("modal").classList.remove("hidden");showSaved()};
 $("closeModal").onclick=()=>$("modal").classList.add("hidden");
-const hash=location.hash.match(/^#invite=(.+)$/);const shared=hash&&decode(hash[1]);if(shared){fill(shared);$("shareUrl").value=location.href}else{render()}
+const hash=location.hash.match(/^#invite=(.+)$/);const shared=hash&&decode(hash[1]);
+if(shared){
+  fill(shared);$("shareUrl").value=location.href;
+  document.body.classList.add("guest-mode");
+  document.querySelector(".editor").style.display="none";
+  document.querySelector(".preview-area").style.position="static";
+  document.querySelector(".preview-area").style.maxWidth="520px";
+  document.querySelector(".preview-area").style.margin="40px auto";
+  document.querySelector(".share-card").style.display="none";
+  $("openBtn").style.display="none"; $("loadBtn").style.display="none";
+  $("shareTop").textContent="Créer ma propre invitation";
+  $("shareTop").onclick=()=>{location.href=location.pathname};
+  document.querySelector(".topbar").style.justifyContent="center";
+  document.querySelector(".brand").href=location.pathname;
+}else{render()}
+document.querySelectorAll(".rsvp-buttons button").forEach((b,i)=>b.onclick=()=>{
+  const answer=i===0?"Je viens":"Je ne peux pas";
+  const text=(data.title||"Invitation")+" — "+answer;
+  if(data.contact && data.contact.includes("@")){
+    location.href="mailto:"+data.contact.trim()+"?subject="+encodeURIComponent("Réponse à l’invitation")+"&body="+encodeURIComponent(text);
+  }else{
+    navigator.clipboard?.writeText(text);
+    toast(data.contact?"Réponse copiée : "+answer:"Réponse enregistrée localement : "+answer);
+  }
+});
