@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invitation Studio</title>
+<meta name="description" content="Crée, personnalise et partage tes invitations.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+<header class="topbar">
+  <a class="brand" href="./">Invitation<span>Studio</span></a>
+  <div class="top-actions">
+    <button class="ghost" id="loadBtn">Mes créations</button>
+    <button class="primary" id="shareTop">Partager</button>
+  </div>
+</header>
+
+<main class="layout">
+<section class="editor">
+  <div class="hero">
+    <p class="eyebrow">CRÉATEUR D’INVITATIONS</p>
+    <h1>Une invitation qui te ressemble.</h1>
+    <p>Crée une invitation élégante, personnalise-la et partage-la avec un simple lien.</p>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><span>01</span><h2>Événement</h2></div>
+    <label>Type
+      <select id="type">
+        <option value="birthday">Anniversaire</option>
+        <option value="party">Fête</option>
+        <option value="outing">Sortie</option>
+        <option value="dinner">Dîner</option>
+        <option value="custom">Autre</option>
+      </select>
+    </label>
+    <label>Titre<input id="title" maxlength="80" value="Mon anniversaire"></label>
+    <label>Message<textarea id="message" maxlength="500">J’aimerais beaucoup que tu sois là pour partager ce moment avec moi !</textarea></label>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><span>02</span><h2>Date & lieu</h2></div>
+    <div class="grid2">
+      <label>Date<input id="date" type="date"></label>
+      <label>Heure<input id="time" type="time" value="14:30"></label>
+    </div>
+    <label>Lieu<input id="place" maxlength="120" placeholder="Chez moi, Saint-Rémy-de-Provence"></label>
+    <label>Détails supplémentaires<textarea id="details" maxlength="300" placeholder="Prévois une tenue confortable…"></textarea></label>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><span>03</span><h2>Personnalisation</h2></div>
+    <div class="themes">
+      <button data-theme="midnight" class="theme active"><i></i>Minuit</button>
+      <button data-theme="paper" class="theme"><i></i>Papier</button>
+      <button data-theme="sunset" class="theme"><i></i>Sunset</button>
+      <button data-theme="forest" class="theme"><i></i>Forêt</button>
+    </div>
+    <label>Nom de l’organisateur<input id="host" maxlength="60" value="Ethan"></label>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><span>04</span><h2>Réponse</h2></div>
+    <label class="check"><input id="rsvp" type="checkbox" checked> Demander une confirmation de présence</label>
+    <label>Contact affiché<input id="contact" maxlength="100" placeholder="Instagram, téléphone, e-mail…"></label>
+  </div>
+
+  <div class="save-row">
+    <button class="primary large" id="saveBtn">Enregistrer</button>
+    <button class="ghost large" id="resetBtn">Réinitialiser</button>
+  </div>
+</section>
+
+<section class="preview-area">
+  <div class="preview-head"><span>APERÇU EN DIRECT</span><button class="ghost small" id="openBtn">Ouvrir</button></div>
+  <div class="phone">
+    <div id="invitation" class="invitation theme-midnight">
+      <div class="sparkles">✦　·　✧　·　✦</div>
+      <p class="invite-label" id="pType">INVITATION</p>
+      <h2 id="pTitle">Mon anniversaire</h2>
+      <div class="divider"></div>
+      <p id="pMessage" class="message"></p>
+      <div class="event-info">
+        <div><small>DATE</small><strong id="pDate">—</strong></div>
+        <div><small>HEURE</small><strong id="pTime">14:30</strong></div>
+        <div><small>LIEU</small><strong id="pPlace">—</strong></div>
+      </div>
+      <p id="pDetails" class="details"></p>
+      <div id="rsvpBox" class="rsvp-box"><strong>Ta réponse</strong><div class="rsvp-buttons"><button>Je viens</button><button>Je ne peux pas</button></div></div>
+      <p class="host">Avec <strong id="pHost">Ethan</strong></p>
+      <p id="pContact" class="contact"></p>
+    </div>
+  </div>
+  <div class="share-card">
+    <strong>Partage rapide</strong>
+    <p>Le lien contient les données de l’invitation : aucun compte ni Supabase n’est nécessaire.</p>
+    <button class="primary full" id="shareBtn">Créer le lien de partage</button>
+    <input id="shareUrl" readonly placeholder="Le lien apparaîtra ici…">
+    <button class="ghost full" id="copyBtn">Copier le lien</button>
+  </div>
+</section>
+</main>
+
+<div class="modal hidden" id="modal">
+  <div class="modal-card">
+    <button class="close" id="closeModal">×</button>
+    <h2>Mes créations</h2>
+    <div id="savedList"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
