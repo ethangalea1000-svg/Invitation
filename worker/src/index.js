@@ -229,7 +229,7 @@ export default {
         return json({ ok: true });
       }
 
-      return json({ error: "Route inconnue." }, 404);
+      if (request.method === "GET" && url.pathname === "/") {\n        return json({ ok: true, service: "Invitation API", status: "online" });\n      }\n\n      return json({ error: "Route inconnue." }, 404);
     } catch (error) {
       return json(
         { error: error?.message || "Erreur serveur." },
