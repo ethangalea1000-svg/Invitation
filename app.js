@@ -44,47 +44,24 @@ if(shared){
  $("openBtn").style.display="none";$("loadBtn").style.display="none";$("shareTop").textContent="Créer ma propre invitation";$("shareTop").onclick=()=>{location.href=location.pathname};document.querySelector(".topbar").style.justifyContent="center";
 }else render();
 
-async function publishInvitation(){
- read();ensureInviteId();
- if(!window.firebaseBridge?.enabled){toast("Firebase n’est pas configuré — invitation locale enregistrée");$("saveBtn").click();return}
- if(!window.firebaseBridge.getUser()){openOrganizer();toast("Connecte-toi pour publier");return}
- try{await window.firebaseBridge.publish(data);$("shareUrl").value=makeUrl();await navigator.clipboard?.writeText($("shareUrl").value);toast("Invitation publiée et lien copié")}catch(e){toast(e.message||"Publication impossible")}
-}
+const API=(window.INVITATION_API_URL||"").replace(/\/$/,"");
+let organizerToken=localStorage.getItem("invitationOrganizerToken")||"";
+async function api(path,options={}){if(!API)throw new Error("API non configurée. Configure l’URL du Worker.");const r=await fetch(API+path,{...options,headers:{"Content-Type":"application/json",...(options.headers||{})}});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"Erreur serveur");return j}
+function newToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function publishInvitation(){read();ensureInviteId();if(!organizerToken){organizerToken=newToken();localStorage.setItem("invitationOrganizerToken",organizerToken)}try{await api("/api/invitations",{method:"POST",body:JSON.stringify({token:organizerToken,invitation:data})});$("shareUrl").value=makeUrl();await navigator.clipboard?.writeText($("shareUrl").value);toast("Invitation publiée et lien copié")}catch(e){toast(e.message||"Publication impossible")}}
 $("publishBtn").onclick=publishInvitation;
-
-function openOrganizer(){$("organizerModal").classList.remove("hidden");refreshAuthView()}
+function openOrganizer(){$("organizerModal").classList.remove("hidden");$("authToken").value=organizerToken;loadDashboard()}
 $("organizerBtn").onclick=openOrganizer;$("closeOrganizer").onclick=()=>$("organizerModal").classList.add("hidden");
-function refreshAuthView(){const user=window.firebaseBridge?.getUser();$("authView").classList.toggle("hidden",!!user);$("dashboardView").classList.toggle("hidden",!user);if(user)loadDashboard()}
-$("loginBtn").onclick=async()=>{try{await window.firebaseBridge.login($("authEmail").value.trim(),$("authPassword").value);$("authStatus").textContent="Connecté."}catch(e){$("authStatus").textContent=e.message||"Connexion impossible."}};
-$("signupBtn").onclick=async()=>{try{await window.firebaseBridge.signup($("authEmail").value.trim(),$("authPassword").value);$("authStatus").textContent="Compte créé et connecté."}catch(e){$("authStatus").textContent=e.message||"Création impossible."}};
-$("logoutBtn").onclick=()=>window.firebaseBridge.logout();$("refreshDashboard").onclick=loadDashboard;
-
-async function loadDashboard(){
- const list=$("dashboardList");list.innerHTML="<p class='hint'>Chargement…</p>";
- if(!window.firebaseBridge?.enabled){list.innerHTML="<p class='hint'>Firebase n’est pas configuré.</p>";return}
- window.firebaseBridge.watchMine(invitations=>{
-   if(!invitations.length){list.innerHTML="<p class='hint'>Aucune invitation publiée.</p>";return}
-   list.innerHTML=invitations.map(inv=>{
-     const responses=Object.entries(inv.responses||{});const yes=responses.filter(([,r])=>r.answer==="yes").length;const no=responses.filter(([,r])=>r.answer==="no").length;
-     return '<div class="saved"><div><strong>'+esc(inv.title||"Invitation")+'</strong><small>Présents : '+yes+' · Absents : '+no+' · Réponses : '+responses.length+'</small></div><button class="ghost small" data-export="'+esc(inv.inviteId)+'">CSV</button></div>'
-   }).join("");
-   document.querySelectorAll("[data-export]").forEach(b=>b.onclick=()=>exportInvitation(b.dataset.export,invitations));
- });
-}
-function exportInvitation(id,invitations){
- const inv=invitations.find(x=>x.inviteId===id);if(!inv)return;
- const rows=[["Nom","Réponse","Personnes","Message","Date"]];
- Object.values(inv.responses||{}).forEach(r=>rows.push([r.name||"",r.answer==="yes"?"Présent":"Absent",r.count||1,r.note||"",new Date(r.createdAt||Date.now()).toLocaleString("fr-FR")]));
- const csv=rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(";")).join("\n");
- const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\\ufeff"+csv],{type:"text/csv;charset=utf-8"}));a.download=(inv.title||"invitation").replace(/[^a-z0-9à-ÿ]+/gi,"-")+".csv";a.click();URL.revokeObjectURL(a.href);
-}
-
-window.firebaseBridge?.onAuth(()=>refreshAuthView());
-
+$("saveTokenBtn").onclick=()=>{const t=$("authToken").value.trim();if(t.length<20){$("authStatus").textContent="Code trop court.";return}organizerToken=t;localStorage.setItem("invitationOrganizerToken",t);$("authStatus").textContent="Code enregistré.";loadDashboard()};
+$("newTokenBtn").onclick=()=>{organizerToken=newToken();localStorage.setItem("invitationOrganizerToken",organizerToken);$("authToken").value=organizerToken;$("authStatus").textContent="Nouveau code créé. Conserve-le.";loadDashboard()};
+$("logoutBtn").onclick=()=>{organizerToken="";localStorage.removeItem("invitationOrganizerToken");$("authToken").value="";$("dashboardList").innerHTML="<p class='hint'>Code effacé de cet appareil.</p>"};
+$("refreshDashboard").onclick=loadDashboard;
+async function loadDashboard(){const list=$("dashboardList");list.innerHTML="<p class='hint'>Chargement…</p>";if(!organizerToken){list.innerHTML="<p class='hint'>Crée ou saisis ton code organisateur.</p>";return}try{const j=await api("/api/invitations?token="+encodeURIComponent(organizerToken));if(!j.invitations.length){list.innerHTML="<p class='hint'>Aucune invitation publiée avec ce code.</p>";return}list.innerHTML=j.invitations.map(inv=>{const yes=inv.responses.filter(r=>r.answer==="yes").length,no=inv.responses.filter(r=>r.answer==="no").length;return '<div class="saved"><div><strong>'+esc(inv.title||"Invitation")+'</strong><small>Présents : '+yes+' · Absents : '+no+' · Réponses : '+inv.responses.length+'</small></div><div><button class="ghost small" data-export="'+esc(inv.inviteId)+'">CSV</button><button class="ghost small" data-delete="'+esc(inv.inviteId)+'">Supprimer</button></div></div>'}).join("");document.querySelectorAll("[data-export]").forEach(b=>b.onclick=()=>exportInvitation(b.dataset.export,j.invitations));document.querySelectorAll("[data-delete]").forEach(b=>b.onclick=async()=>{if(!confirm("Supprimer cette invitation et ses réponses ?"))return;try{await api("/api/invitations/"+encodeURIComponent(b.dataset.delete),{method:"DELETE",headers:{"X-Organizer-Token":organizerToken}});toast("Invitation supprimée");loadDashboard()}catch(e){toast(e.message)}})}catch(e){list.innerHTML="<p class='hint'>"+esc(e.message)+"</p>"}}
+function exportInvitation(id,invitations){const inv=invitations.find(x=>x.inviteId===id);if(!inv)return;const rows=[["Nom","Réponse","Personnes","Message","Question","Date"]];inv.responses.forEach(r=>rows.push([r.name||"",r.answer==="yes"?"Présent":"Absent",r.count||1,r.note||"",r.custom||"",new Date(r.createdAt).toLocaleString("fr-FR")]));const csv=rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(";")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\\ufeff"+csv],{type:"text/csv;charset=utf-8"}));a.download=(inv.title||"invitation").replace(/[^a-z0-9à-ÿ]+/gi,"-")+".csv";a.click();URL.revokeObjectURL(a.href)}
 document.querySelectorAll(".rsvp-buttons button").forEach(b=>b.onclick=()=>{
  if(!data.rsvp)return;responseAnswer=b.dataset.answer;$("responseTitle").textContent=responseAnswer==="yes"?"Je viens":"Je ne peux pas";$("responseModal").classList.remove("hidden");$("guestName").focus();
 });
 $("closeResponse").onclick=()=>$("responseModal").classList.add("hidden");
 function responseText(){let parts=[data.title||"Invitation",responseAnswer==="yes"?"Je viens":"Je ne peux pas","Nom : "+($("guestName").value||"Non indiqué")];if(data.askGuests)parts.push("Personnes : "+$("guestCount").value);if(data.askNote&&$("guestNote").value)parts.push("Message : "+$("guestNote").value);if(data.customQuestion&&$("guestCustom").value)parts.push(data.customQuestion+" : "+$("guestCustom").value);return parts.join("\n")}
 $("copyResponse").onclick=async()=>{let t=responseText();try{await navigator.clipboard.writeText(t);toast("Réponse copiée")}catch{toast("Impossible de copier automatiquement")}};
-$("sendResponse").onclick=async()=>{let t=responseText();let response={answer:responseAnswer,name:$("guestName").value.trim(),count:data.askGuests?Number($("guestCount").value||1):1,note:data.askNote?$("guestNote").value.trim():"",custom:data.customQuestion?$("guestCustom").value.trim():""};if(window.firebaseBridge?.enabled&&data.inviteId){try{await window.firebaseBridge.submitResponse(data.inviteId,response);toast("Réponse envoyée");$("responseModal").classList.add("hidden");return}catch(e){toast("Envoi en ligne impossible, réponse copiée")}}if(data.contact&&data.contact.includes("@")){location.href="mailto:"+encodeURIComponent(data.contact.trim())+"?subject="+encodeURIComponent("Réponse à l’invitation — "+(data.title||"Invitation"))+"&body="+encodeURIComponent(t)}else{navigator.clipboard?.writeText(t);toast(data.contact?"Réponse préparée et copiée":"Réponse copiée : partage-la à l’organisateur");$("responseModal").classList.add("hidden")}};
+$("sendResponse").onclick=async()=>{let t=responseText();let response={answer:responseAnswer,name:$("guestName").value.trim(),count:data.askGuests?Number($("guestCount").value||1):1,note:data.askNote?$("guestNote").value.trim():"",custom:data.customQuestion?$("guestCustom").value.trim():""};if(API&&data.inviteId){try{await api("/api/invitations/"+encodeURIComponent(data.inviteId)+"/responses",{method:"POST",body:JSON.stringify(response)});toast("Réponse envoyée");$("responseModal").classList.add("hidden");return}catch(e){toast(e.message||"Envoi en ligne impossible")}}if(data.contact&&data.contact.includes("@")){location.href="mailto:"+encodeURIComponent(data.contact.trim())+"?subject="+encodeURIComponent("Réponse à l’invitation — "+(data.title||"Invitation"))+"&body="+encodeURIComponent(t)}else{navigator.clipboard?.writeText(t);toast(data.contact?"Réponse préparée et copiée":"Réponse copiée : partage-la à l’organisateur");$("responseModal").classList.add("hidden")}};
