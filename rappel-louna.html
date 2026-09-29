@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission du 19 août — Rappel</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 20% 20%,#fff59d 0 8%,transparent 9%),radial-gradient(circle at 80% 80%,#ffe66d 0 7%,transparent 8%),#ffd83d;color:#222;display:flex;justify-content:center;align-items:center;padding:25px}.letter{width:min(720px,100%);background:#fffdf2;border:5px solid #222;border-radius:24px;box-shadow:12px 12px 0 #222;padding:30px;position:relative;overflow:hidden}.tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-2deg);background:#ffec70;border:2px solid #222;padding:8px 28px;font-weight:900;box-shadow:3px 3px 0 #222}.badge{display:inline-block;background:#222;color:#ffd83d;padding:8px 14px;border-radius:999px;font-weight:900;font-size:13px;margin-top:18px}h1{font-size:clamp(32px,7vw,56px);line-height:.95;margin:18px 0 8px}.subtitle{font-size:18px;font-weight:800;color:#555;margin-bottom:25px}.message{font-size:17px;line-height:1.65}.mission{margin:25px 0;background:#ffe66d;border:3px dashed #222;border-radius:18px;padding:20px;transform:rotate(-.5deg)}.mission h2{margin-top:0;font-size:22px}.mission p{margin:9px 0;font-weight:700}.deadline{background:#222;color:white;border-radius:14px;padding:15px;margin:22px 0;font-weight:800;text-align:center}.question{font-size:20px;font-weight:900;margin-top:28px}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}button{border:3px solid #222;border-radius:14px;padding:15px;font-size:16px;font-weight:900;cursor:pointer;background:white;box-shadow:4px 4px 0 #222}button:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 #222}.answer{display:none;margin-top:20px;padding:16px;border:3px solid #222;border-radius:15px;background:#fff}.footer{text-align:center;margin-top:25px;font-size:13px;font-weight:700;color:#666}@media(max-width:520px){.letter{padding:22px;box-shadow:7px 7px 0 #222}.buttons{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="letter">
+<div class="tape">⚠️ RAPPEL DE MISSION ⚠️</div>
+<span class="badge">DOSSIER : LOUNA · PRIORITÉ MAXIMALE</span>
+<h1>Coucou Louna ! 😄</h1>
+<p class="subtitle">Petit rappel officiel… mais pas trop officiel. 😂</p>
+
+<div class="message">
+<p>La <strong>mission du mercredi 19 août</strong> approche !</p>
+<p>Je voulais juste faire un petit rappel parce que tu m'avais dit que tu devais voir avec tes parents.</p>
+</div>
+
+<section class="mission">
+<h2>🎯 MISSION DU JOUR</h2>
+<p>📍 <strong>Lieu :</strong> chez moi, à Saint-Rémy-de-Provence</p>
+<p>🕝 <strong>Horaire :</strong> de 14 h 30 à 18 h 30</p>
+<p>🌊 <strong>Au programme :</strong> piscine, jeux, discussions et bonne ambiance</p>
+<p>🎲 <strong>Niveau de difficulté :</strong> normalement très faible</p>
+</section>
+
+<div class="deadline">
+⏰ RÉPONSE MAXIMUM : 1 JOUR AVANT<br>
+Donc idéalement avant le <strong>18 août</strong>.
+</div>
+
+<p class="question">Tes parents valident-ils la mission ? 😂</p>
+
+<div class="buttons">
+<button onclick="answer('yes')">✅ OUI, MISSION VALIDÉE</button>
+<button onclick="answer('no')">❌ NON, MISSION IMPOSSIBLE</button>
+</div>
+
+<div id="answer" class="answer"></div>
+
+<p class="footer">Merci pour ta réponse, agente Louna. 🕵️‍♀️<br>Le QG attend ton verdict.</p>
+</main>
+
+<script>
+function answer(type){
+ const box=document.getElementById('answer');
+ box.style.display='block';
+ box.textContent=type==='yes'
+ ? '🎉 Mission validée ! Le QG est officiellement prévenu.'
+ : '😢 Mission annulée… Le QG accuse réception. Merci d’avoir répondu !';
+}
+</script>
+</body>
+</html>
