@@ -3,68 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Invitation Studio — crée et partage des invitations personnalisées gratuitement.">
 <title>Invitation Studio</title>
-<meta name="description" content="Crée, personnalise et partage tes invitations.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app">
 <header class="topbar">
   <a class="brand" href="./">Invitation<span>Studio</span></a>
-  <div class="top-actions">
+  <nav class="top-actions">
     <button class="ghost" id="loadBtn">Mes créations</button>
     <button class="primary" id="shareTop">Partager</button>
-  </div>
+  </nav>
 </header>
 
 <main class="layout">
 <section class="editor">
   <div class="hero">
-    <p class="eyebrow">CRÉATEUR D’INVITATIONS</p>
-    <h1>Une invitation qui te ressemble.</h1>
-    <p>Crée une invitation élégante, personnalise-la et partage-la avec un simple lien.</p>
+    <p class="eyebrow">CRÉATEUR D’INVITATIONS · 100 % GRATUIT</p>
+    <h1>Crée une invitation vraiment à ton image.</h1>
+    <p>Choisis le contenu, le style, les couleurs, la mise en page et le fonctionnement des réponses. Tout fonctionne sur GitHub Pages, sans abonnement.</p>
   </div>
 
-  <div class="card">
-    <div class="section-title"><span>01</span><h2>Événement</h2></div>
-    <label>Type
-      <select id="type">
-        <option value="birthday">Anniversaire</option>
-        <option value="party">Fête</option>
-        <option value="outing">Sortie</option>
-        <option value="dinner">Dîner</option>
-        <option value="custom">Autre</option>
-      </select>
-    </label>
-    <label>Titre<input id="title" maxlength="80" value="Mon anniversaire"></label>
-    <label>Message<textarea id="message" maxlength="500">J’aimerais beaucoup que tu sois là pour partager ce moment avec moi !</textarea></label>
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="content">Contenu</button>
+    <button class="tab" data-tab="design">Design</button>
+    <button class="tab" data-tab="responses">Réponses</button>
   </div>
 
-  <div class="card">
-    <div class="section-title"><span>02</span><h2>Date & lieu</h2></div>
-    <div class="grid2">
-      <label>Date<input id="date" type="date"></label>
-      <label>Heure<input id="time" type="time" value="14:30"></label>
+  <div class="tab-panel active" id="tab-content">
+    <div class="card">
+      <div class="section-title"><span>01</span><h2>Événement</h2></div>
+      <label>Type
+        <select id="type">
+          <option value="birthday">Anniversaire</option><option value="party">Fête</option>
+          <option value="outing">Sortie</option><option value="dinner">Dîner</option><option value="custom">Autre</option>
+        </select>
+      </label>
+      <label>Titre<input id="title" maxlength="80" value="Mon anniversaire"></label>
+      <label>Message<textarea id="message" maxlength="600">J’aimerais beaucoup que tu sois là pour partager ce moment avec moi !</textarea></label>
     </div>
-    <label>Lieu<input id="place" maxlength="120" placeholder="Chez moi, Saint-Rémy-de-Provence"></label>
-    <label>Détails supplémentaires<textarea id="details" maxlength="300" placeholder="Prévois une tenue confortable…"></textarea></label>
-  </div>
-
-  <div class="card">
-    <div class="section-title"><span>03</span><h2>Personnalisation</h2></div>
-    <div class="themes">
-      <button data-theme="midnight" class="theme active"><i></i>Minuit</button>
-      <button data-theme="paper" class="theme"><i></i>Papier</button>
-      <button data-theme="sunset" class="theme"><i></i>Sunset</button>
-      <button data-theme="forest" class="theme"><i></i>Forêt</button>
+    <div class="card">
+      <div class="section-title"><span>02</span><h2>Date & lieu</h2></div>
+      <div class="grid2"><label>Date<input id="date" type="date"></label><label>Heure<input id="time" type="time" value="14:30"></label></div>
+      <label>Lieu<input id="place" maxlength="140" placeholder="Chez moi, Saint-Rémy-de-Provence"></label>
+      <label>Détails supplémentaires<textarea id="details" maxlength="400" placeholder="Tenue, matériel, consignes, programme…"></textarea></label>
+      <label>Nom de l’organisateur<input id="host" maxlength="60" value="Ethan"></label>
     </div>
-    <label>Nom de l’organisateur<input id="host" maxlength="60" value="Ethan"></label>
   </div>
 
-  <div class="card">
-    <div class="section-title"><span>04</span><h2>Réponse</h2></div>
-    <label class="check"><input id="rsvp" type="checkbox" checked> Demander une confirmation de présence</label>
-    <label>Contact affiché<input id="contact" maxlength="100" placeholder="Instagram, téléphone, e-mail…"></label>
+  <div class="tab-panel" id="tab-design">
+    <div class="card">
+      <div class="section-title"><span>03</span><h2>Style</h2></div>
+      <div class="themes">
+        <button data-theme="midnight" class="theme active"><i></i>Minuit</button>
+        <button data-theme="paper" class="theme"><i></i>Papier</button>
+        <button data-theme="sunset" class="theme"><i></i>Sunset</button>
+        <button data-theme="forest" class="theme"><i></i>Forêt</button>
+        <button data-theme="ocean" class="theme"><i></i>Océan</button>
+        <button data-theme="lavender" class="theme"><i></i>Lilas</button>
+      </div>
+      <div class="grid2">
+        <label>Couleur d’accent<input id="accent" type="color" value="#756ff5"></label>
+        <label>Couleur du texte<input id="textColor" type="color" value="#ffffff"></label>
+      </div>
+      <label>Police
+        <select id="font">
+          <option value="classic">Classique</option><option value="modern">Moderne</option><option value="elegant">Élégante</option><option value="mono">Tech</option>
+        </select>
+      </label>
+      <label class="check"><input id="compact" type="checkbox"> Mise en page compacte</label>
+    </div>
+    <div class="card">
+      <div class="section-title"><span>04</span><h2>Options visuelles</h2></div>
+      <label>Emoji / symbole<input id="symbol" maxlength="8" value="✦"></label>
+      <label>Petit sous-titre<input id="subtitle" maxlength="80" placeholder="Une journée spéciale…"></label>
+      <label>Image de couverture (URL)<input id="image" maxlength="500" placeholder="https://..."></label>
+      <p class="hint">L’image doit être accessible publiquement. Aucune image n’est envoyée à un serveur par Invitation Studio.</p>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tab-responses">
+    <div class="card">
+      <div class="section-title"><span>05</span><h2>Réponses</h2></div>
+      <label class="check"><input id="rsvp" type="checkbox" checked> Demander une confirmation de présence</label>
+      <label>Contact de l’organisateur<input id="contact" maxlength="160" placeholder="e-mail, téléphone, Instagram…"></label>
+      <div class="grid2">
+        <label class="check"><input id="askGuests" type="checkbox"> Demander le nombre de personnes</label>
+        <label class="check"><input id="askNote" type="checkbox"> Autoriser un message</label>
+      </div>
+      <label>Question personnalisée<input id="customQuestion" maxlength="120" placeholder="Ex. Allergies / préférence / question…"></label>
+      <p class="hint">Sans serveur, les réponses peuvent être préparées puis envoyées à l’organisateur par e-mail ou copiées. Pour un tableau de réponses partagé entre plusieurs appareils, il faudra connecter un service gratuit comme Firebase.</p>
+    </div>
   </div>
 
   <div class="save-row">
@@ -77,8 +106,10 @@
   <div class="preview-head"><span>APERÇU EN DIRECT</span><button class="ghost small" id="openBtn">Ouvrir</button></div>
   <div class="phone">
     <div id="invitation" class="invitation theme-midnight">
-      <div class="sparkles">✦　·　✧　·　✦</div>
+      <div class="cover-image" id="pImage"></div>
+      <div class="sparkles" id="pSymbol">✦　·　✧　·　✦</div>
       <p class="invite-label" id="pType">INVITATION</p>
+      <p class="subtitle" id="pSubtitle"></p>
       <h2 id="pTitle">Mon anniversaire</h2>
       <div class="divider"></div>
       <p id="pMessage" class="message"></p>
@@ -88,14 +119,17 @@
         <div><small>LIEU</small><strong id="pPlace">—</strong></div>
       </div>
       <p id="pDetails" class="details"></p>
-      <div id="rsvpBox" class="rsvp-box"><strong>Ta réponse</strong><div class="rsvp-buttons"><button>Je viens</button><button>Je ne peux pas</button></div></div>
+      <div id="rsvpBox" class="rsvp-box">
+        <strong>Ta réponse</strong>
+        <div class="rsvp-buttons"><button data-answer="yes">Je viens</button><button data-answer="no">Je ne peux pas</button></div>
+      </div>
       <p class="host">Avec <strong id="pHost">Ethan</strong></p>
       <p id="pContact" class="contact"></p>
     </div>
   </div>
   <div class="share-card">
     <strong>Partage rapide</strong>
-    <p>Le lien contient les données de l’invitation : aucun compte ni Supabase n’est nécessaire.</p>
+    <p>Le lien contient les réglages de l’invitation. Pas de compte, pas de Supabase et pas de paiement.</p>
     <button class="primary full" id="shareBtn">Créer le lien de partage</button>
     <input id="shareUrl" readonly placeholder="Le lien apparaîtra ici…">
     <button class="ghost full" id="copyBtn">Copier le lien</button>
@@ -103,13 +137,20 @@
 </section>
 </main>
 
-<div class="modal hidden" id="modal">
-  <div class="modal-card">
-    <button class="close" id="closeModal">×</button>
-    <h2>Mes créations</h2>
-    <div id="savedList"></div>
-  </div>
-</div>
+<div class="modal hidden" id="modal"><div class="modal-card">
+  <button class="close" id="closeModal">×</button><h2>Mes créations</h2><div id="savedList"></div>
+</div></div>
+
+<div class="response-modal hidden" id="responseModal"><div class="modal-card response-card">
+  <button class="close" id="closeResponse">×</button>
+  <p class="eyebrow">RÉPONSE</p><h2 id="responseTitle">Ta réponse</h2>
+  <label>Ton prénom / nom<input id="guestName" maxlength="60" placeholder="Ex. Léa"></label>
+  <label id="guestCountWrap">Nombre de personnes<input id="guestCount" type="number" min="1" max="20" value="1"></label>
+  <label id="guestNoteWrap">Message<textarea id="guestNote" maxlength="300" placeholder="Un petit mot…"></textarea></label>
+  <label id="guestCustomWrap">Question<input id="guestCustom" maxlength="160"></label>
+  <div class="response-actions"><button class="primary" id="sendResponse">Envoyer la réponse</button><button class="ghost" id="copyResponse">Copier la réponse</button></div>
+  <p class="hint">Aucune donnée n’est envoyée automatiquement vers un serveur dans cette version gratuite sans backend.</p>
+</div></div>
 <div class="toast" id="toast"></div>
 <script src="app.js"></script>
 </body>
