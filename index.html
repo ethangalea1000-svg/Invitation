@@ -92,7 +92,7 @@
         <label class="check"><input id="askNote" type="checkbox"> Autoriser un message</label>
       </div>
       <label>Question personnalisée<input id="customQuestion" maxlength="120" placeholder="Ex. Allergies / préférence / question…"></label>
-      <p class="hint">Sans serveur, les réponses peuvent être préparées puis envoyées à l’organisateur par e-mail ou copiées. Pour un tableau de réponses partagé entre plusieurs appareils, il faudra connecter un service gratuit comme Firebase.</p>
+      <p class="hint">Sans serveur, les réponses peuvent être préparées puis envoyées à l’organisateur par e-mail ou copiées. Pour un tableau de réponses partagé entre plusieurs appareils, Invitation Studio peut utiliser son API Cloudflare Worker + D1. Aucun compte Firebase n’est nécessaire.</p>
     </div>
   </div>
 
@@ -151,7 +151,17 @@
   <div class="response-actions"><button class="primary" id="sendResponse">Envoyer la réponse</button><button class="ghost" id="copyResponse">Copier la réponse</button></div>
   <p class="hint">Aucune donnée n’est envoyée automatiquement vers un serveur dans cette version gratuite sans backend.</p>
 </div></div>
-<div class="modal hidden" id="organizerModal"><div class="modal-card organizer-card"><button class="close" id="closeOrganizer">×</button><div id="authView"><p class="eyebrow">ESPACE ORGANISATEUR</p><h2>Gérer mes invitations</h2><p class="hint">Compte gratuit pour retrouver les invitations et leurs réponses sur plusieurs appareils.</p><label>E-mail<input id="authEmail" type="email" autocomplete="email"></label><label>Mot de passe<input id="authPassword" type="password" autocomplete="current-password"></label><div class="response-actions"><button class="primary" id="loginBtn">Se connecter</button><button class="ghost" id="signupBtn">Créer un compte</button></div><p class="hint" id="authStatus"></p></div><div id="dashboardView" class="hidden"><p class="eyebrow">TABLEAU DE BORD</p><h2>Mes invitations</h2><div id="dashboardList"></div><div class="response-actions"><button class="ghost" id="refreshDashboard">Actualiser</button><button class="ghost" id="logoutBtn">Se déconnecter</button></div></div></div></div><div class="toast" id="toast"></div>
-<script src="firebase-config.js"></script><script type="module" src="firebase-app.js"></script><script src="app.js"></script>
+<div class="modal hidden" id="organizerModal"><div class="modal-card organizer-card">
+  <button class="close" id="closeOrganizer">×</button>
+  <p class="eyebrow">ESPACE ORGANISATEUR</p><h2>Gérer mes invitations</h2>
+  <p class="hint">Aucun compte Google ou Firebase. Ton code organisateur est une clé privée qui permet d'accéder à tes invitations.</p>
+  <label>Code organisateur<input id="authToken" type="text" autocomplete="off" spellcheck="false" placeholder="Clique sur « Nouveau code »"></label>
+  <div class="response-actions"><button class="primary" id="saveTokenBtn">Utiliser ce code</button><button class="ghost" id="newTokenBtn">Nouveau code</button></div>
+  <p class="hint" id="authStatus">Conserve ce code : il est nécessaire pour retrouver tes invitations sur un autre appareil.</p>
+  <div id="dashboardView"><p class="eyebrow">TABLEAU DE BORD</p><div id="dashboardList"></div>
+    <div class="response-actions"><button class="ghost" id="refreshDashboard">Actualiser</button><button class="ghost" id="logoutBtn">Effacer ce code</button></div>
+  </div>
+</div></div><div class="toast" id="toast"></div>
+<script src="api-config.js"></script><script src="app.js"></script>
 </body>
 </html>
