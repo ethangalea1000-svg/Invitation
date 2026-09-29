@@ -1,0 +1,8 @@
+name = "invitation-api"
+main = "src/index.ts"
+compatibility_date = "2026-09-29"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "invitation-db"
+database_id = "REMPLACE_PAR_L_ID_D1"
