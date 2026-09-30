@@ -1,4 +1,5 @@
 // Invitation API — déploiement automatique via GitHub Actions / Cloudflare Workers
+// Sécurité admin : le secret ADMIN_PASSWORD est injecté par GitHub Actions dans Cloudflare.
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
