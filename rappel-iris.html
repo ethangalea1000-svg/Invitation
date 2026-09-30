@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rappel pour Iris</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px;background:radial-gradient(circle at top,#fff8e8,#e7d5ae);color:#3f3326;font-family:Georgia,"Times New Roman",serif;display:flex;justify-content:center;align-items:center}
+.scroll{width:min(760px,100%);padding:54px 58px;background:#fbf1d8;border:1px solid #b99b63;box-shadow:0 20px 55px rgba(70,48,20,.25);position:relative}.scroll:before{content:"";position:absolute;inset:13px;border:1px solid #cdb785;pointer-events:none}.seal{text-align:center;font-size:26px;margin-bottom:14px;color:#876b3c}h1{text-align:center;font-weight:normal;font-size:29px;margin:0 0 30px;color:#5a4427}.verse{font-size:19px;line-height:2;text-align:center;font-style:italic}.verse p{margin:0 0 18px}.actions{position:relative;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:32px}.actions button{font-family:Georgia,serif;font-size:15px;padding:12px 19px;border:1px solid #a98a52;background:#f5e7c5;color:#4a3924;cursor:pointer}.actions button:hover{background:#ead7ad}.msg{text-align:center;margin-top:16px;min-height:22px;font-style:italic}
+@media(max-width:600px){.scroll{padding:42px 24px}.scroll:before{inset:8px}h1{font-size:24px}.verse{font-size:16px;line-height:1.8}}
+</style>
+</head>
+<body>
+<main class="scroll">
+<div class="seal">✦ ❦ ✦</div>
+<h1>Un doux rappel</h1>
+<div class="verse">
+<p>Très chère Iris, permettez ce doux rappel,<br>Le dix-neuf août prochain, chez moi sera bien bel.</p>
+<p>De quatorze heures trente à dix-huit heures trente,<br>Piscine, jeux et échanges formeront une douce entente.</p>
+<p>Vous deviez consulter vos précieux rendez-vous,<br>Pour savoir si vous pourriez vous joindre à nous.</p>
+<p>Auriez-vous désormais quelque réponse à m'offrir ?<br>Votre présence serait pour moi un grand plaisir. ✨</p>
+</div>
+<div class="actions">
+<button onclick="answer('Oui, je serai présente ✨')">Oui, je serai présente ✨</button>
+<button onclick="answer('Non, je ne pourrai pas.')">Je ne pourrai pas</button>
+</div>
+<div class="msg" id="msg"></div>
+</main>
+<script>function answer(t){document.getElementById('msg').textContent='Réponse enregistrée : '+t}</script>
+</body>
+</html>
