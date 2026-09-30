@@ -86,11 +86,11 @@ button{border:0;border-radius:11px;padding:12px 16px;font-weight:700;cursor:poin
 const API="https://invitation-api.ethan-galea1000.workers.dev";
 const groupModel={inviteId:"invitation_groupe_modele_2026",title:"Invitation de groupe — Modèle",message:"Tu es invité(e) à participer à cet événement avec le groupe. Merci d’indiquer ton nom et ta réponse.",date:"",time:"",place:"",host:"Ethan",rsvp:true};
 const letters=[
-{inviteId:"lettre_louise_2026",title:"Louise",message:"Invitation personnelle de Louise",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
-{inviteId:"lettre_laure_2026",title:"Laure",message:"Invitation de Laure",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
-{inviteId:"lettre_iris_2026",title:"Iris",message:"Invitation de Iris",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
-{inviteId:"rappel_iris_2026",title:"Rappel Iris",message:"Rappel pour Iris",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
-{inviteId:"rappel_louna_2026",title:"Rappel Louna",message:"Rappel de mission pour Louna",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
+{inviteId:"invitation_jacques_2026",title:"Jacques",message:"Invitation personnelle de Jacques",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"lettre_laure_2026",title:"Laure",message:"Invitation de Laure",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"lettre_louise_2026",title:"Louise",message:"Invitation personnelle de Louise",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"invitation_amaranta_2026",title:"Amaranta",message:"Invitation personnelle de Amaranta",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"lettre_iris_2026",title:"Iris",message:"Invitation de Iris",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
 ];
 
 let password="";
@@ -231,11 +231,11 @@ async function deleteInvitation(inviteId){
 async function copyInviteLink(inviteId, button){
   const pageByInvite={
     invitation_groupe_modele_2026:'invitation-groupe-modele.html',
+    invitation_jacques_2026:'lettre-jacques-2026.html',
     lettre_louise_2026:'lettre-louise.html',
     lettre_laure_2026:'lettre-laure.html',
-    lettre_iris_2026:'lettre-iris.html',
-    rappel_iris_2026:'rappel-iris.html',
-    rappel_louna_2026:'rappel-louna.html'
+    invitation_amaranta_2026:'invitation-amaranta-2026.html',
+    lettre_iris_2026:'lettre-iris.html'
   };
   const page=pageByInvite[inviteId];
   if(!page){
