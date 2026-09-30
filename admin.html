@@ -91,7 +91,7 @@ const letters=[
 {inviteId:"rappel_louna_2026",title:"Rappel Louna",message:"Rappel de mission pour Louna",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
 ];
 
-let password=sessionStorage.getItem("invitationAdminPassword")||"";
+let password=localStorage.getItem("invitationAdminPassword")||"";
 const $=id=>document.getElementById(id);
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 
@@ -118,7 +118,7 @@ async function login(){
       return j;
     });
     password=value;
-    sessionStorage.setItem("invitationAdminPassword",password);
+    localStorage.setItem("invitationAdminPassword",password);
     showApp();
     await load();
   }catch(e){
@@ -134,7 +134,7 @@ function showApp(){
 
 function logout(){
   password="";
-  sessionStorage.removeItem("invitationAdminPassword");
+  localStorage.removeItem("invitationAdminPassword");
   $("app").classList.add("hidden");
   $("loginCard").classList.remove("hidden");
   $("password").value="";
