@@ -1,48 +1,9 @@
 <!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Invitation pour Laure</title>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Invitation pour Laure</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#dff6ff,#fff1cf);font-family:Arial,Helvetica,sans-serif;color:#173b4d;display:flex;align-items:center;justify-content:center;padding:22px}
-.card{width:min(740px,100%);background:rgba(255,255,255,.94);border-radius:28px;padding:42px;box-shadow:0 18px 45px rgba(33,91,111,.18);border:3px solid #b9e6f2;position:relative;overflow:hidden}.card:after{content:"☀️  🌊  🎲";position:absolute;right:20px;top:16px;font-size:24px}
-h1{margin:10px 0 28px;font-size:34px;color:#12617a}.hello{font-size:22px;font-weight:700}.text{font-size:18px;line-height:1.65}.highlight{background:#e7f9ff;border-radius:16px;padding:16px;margin:20px 0;font-weight:600}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.actions button{border:0;border-radius:999px;padding:14px 20px;font-weight:700;font-size:15px;cursor:pointer;background:#d7f3fb;color:#12617a}.actions button:hover{transform:translateY(-1px);background:#c5edf8}.msg{margin-top:18px;font-weight:600;min-height:22px}
-@media(max-width:600px){.card{padding:28px 22px;border-radius:22px}h1{font-size:28px}.text{font-size:16px}.card:after{font-size:19px}}
-</style>
-</head>
-<body>
-<main class="card">
-<h1>Invitation pour un aprèm sympa</h1>
-<p class="hello">Salut Laure !</p>
-<div class="text">
-<p>Le mercredi 19 août je fais un aprèm chez moi à Saint-Rémy-de-Provence, de 14 h 30 à 18 h 30. Y aura piscine, jeux, discussions et une bonne ambiance.</p>
-<div class="highlight">J'ai aussi invité Iris, Louna, Louise et Isaac.</div>
-<p>Si t'es dispo, passe, ça serait vraiment cool ! 😎🌊</p>
-</div>
-<div class="actions">
-<button onclick="answer('yes',this)">Je viens 😎</button>
-<button onclick="answer('no',this)">Je ne peux pas</button>
-</div>
-<div class="msg" id="msg"></div>
-</main>
-
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#fff3e8,#e9f7f1);font-family:Arial,Helvetica,sans-serif;color:#29453e;display:flex;align-items:center;justify-content:center;padding:22px}.card{width:min(740px,100%);background:#fff;border-radius:30px;padding:44px;box-shadow:0 20px 50px rgba(45,75,65,.15);border:2px solid #d4eadf}h1{font-size:34px;margin:0 0 28px;color:#286052}.hello{font-size:22px;font-weight:700}.text{font-size:18px;line-height:1.7}.highlight{padding:18px;border-radius:17px;background:#eef9f4;margin:22px 0;font-weight:600}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.actions button{border:0;border-radius:999px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;background:#dcefe8;color:#286052}.actions button:hover{background:#cce7dd}.msg{margin-top:18px;min-height:22px;font-weight:600}
+</style></head><body><main class="card"><h1>Une invitation pour toi</h1><p class="hello">Salut Laure !</p><div class="text"><p>Je t’invite à venir à Saint-Rémy-de-Provence le <strong>dimanche 18 octobre</strong>, de <strong>14 h à 18 h</strong>.</p><div class="highlight">Un après-midi tranquille pour profiter, discuter, jouer et passer un bon moment ensemble.</div><p>Si tu peux venir, ce serait vraiment sympa !</p></div><div class="actions"><button onclick="answer('yes')">Je viens</button><button onclick="answer('no')">Je ne peux pas</button></div><div class="msg" id="msg"></div></main>
 <script>
-const API="https://invitation-api.ethan-galea1000.workers.dev";
-const INVITE_ID="lettre_laure_2026";
-async function answer(type,button){
- const name="Laure";
- const buttons=document.querySelectorAll(".actions button, .buttons button");buttons.forEach(b=>b.disabled=true);
- const msg=document.getElementById("msg")||document.getElementById("answer");
- if(msg){msg.style.display="block";msg.textContent="Enregistrement de ta réponse…";}
- try{
-  const r=await fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer:type,name,count:1,note:"",custom:""})});
-  const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");
-  if(msg){msg.style.display="block";msg.textContent=type==="yes"?"Merci Laure, ta réponse a bien été enregistrée.":"Merci Laure, j’ai bien enregistré que tu ne pouvais pas venir.";}
- }catch(e){
-  if(msg){msg.style.display="block";msg.textContent="Impossible d'enregistrer la réponse : "+e.message;}
-  buttons.forEach(b=>b.disabled=false);
- }
-}
-</script>
-</body></html>
+const API="https://invitation-api.ethan-galea1000.workers.dev",INVITE_ID="invitation_laure_2026";
+async function answer(type){const bs=document.querySelectorAll("button");bs.forEach(b=>b.disabled=true);const m=document.getElementById("msg");m.textContent="Enregistrement de ta réponse…";try{const r=await fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer:type,name:"Laure",count:1,note:"",custom:""})});const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");m.textContent=type==="yes"?"Merci Laure, ta réponse a bien été enregistrée.":"Merci Laure, j’ai bien enregistré ta réponse."}catch(e){m.textContent="Impossible d'enregistrer la réponse : "+e.message;bs.forEach(b=>b.disabled=false)}}
+</script></body></html>
