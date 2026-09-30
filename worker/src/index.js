@@ -1,3 +1,5 @@
+// Invitation API — déploiement automatique via GitHub Actions / Cloudflare Workers
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type,X-Organizer-Token",
@@ -55,7 +57,6 @@ export default {
     try {
       const url = new URL(request.url);
 
-      // Publier / mettre à jour une invitation.
       if (request.method === "POST" && url.pathname === "/api/invitations") {
         const body = await request.json();
 
@@ -91,15 +92,13 @@ export default {
         return json({ ok: true, inviteId: invitation.inviteId });
       }
 
-      // Envoyer une réponse à une invitation.
       const responseMatch = url.pathname.match(
-        /^\/api\/invitations\/([^/]+)\/responses$/
+        /^\\/api\\/invitations\\/([^/]+)\\/responses$/
       );
 
       if (request.method === "POST" && responseMatch) {
         const inviteId = decodeURIComponent(responseMatch[1]);
         const body = await request.json();
-
         const name = String(body.name || "").trim();
 
         if (!["yes", "no"].includes(body.answer) || !name) {
@@ -137,7 +136,6 @@ export default {
         return json({ ok: true, id: responseId });
       }
 
-      // Récupérer les invitations et leurs réponses pour l'admin.
       if (request.method === "GET" && url.pathname === "/api/invitations") {
         const token = organizerToken(request);
 
@@ -146,7 +144,6 @@ export default {
         }
 
         const ownerTokenHash = await sha(token);
-
         const rows = await env.DB
           .prepare(
             "SELECT * FROM invitations WHERE owner_token_hash = ? ORDER BY updated_at DESC"
@@ -158,7 +155,6 @@ export default {
 
         for (const row of rows.results || []) {
           const data = JSON.parse(row.data_json);
-
           const responseRows = await env.DB
             .prepare(
               `SELECT
@@ -185,9 +181,8 @@ export default {
         return json({ invitations });
       }
 
-      // Supprimer une invitation et toutes ses réponses.
       const deleteMatch = url.pathname.match(
-        /^\/api\/invitations\/([^/]+)$/
+        /^\\/api\\/invitations\\/([^/]+)$/
       );
 
       if (request.method === "DELETE" && deleteMatch) {
