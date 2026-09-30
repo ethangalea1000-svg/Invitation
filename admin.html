@@ -165,6 +165,7 @@ async function load(){
       '<div class="stat"><b>'+yes+'</b><span>Présents</span></div>'+
       '<div class="stat"><b>'+no+'</b><span>Absents</span></div>';
 
+    window.currentInvitations=invs;
     $("list").innerHTML=invs.map(i=>{
       const responses=i.responses||[];
       return '<div class="inv"><h3>'+esc(i.title)+'</h3>'+
@@ -180,6 +181,7 @@ async function load(){
             '</div>'
           ).join("")
           :'<div class="empty">Aucune réponse pour le moment.</div>')+
+        '<div class="actions" style="margin-top:12px"><button class="secondary" onclick="deleteInvitation(\''+esc(i.inviteId)+'\')">Supprimer cette invitation et ses réponses</button></div>'+
         '</div>';
     }).join("")||'<div class="empty">Aucune invitation préparée.</div>';
   }catch(e){
@@ -190,6 +192,39 @@ async function load(){
 
 $("login").onclick=login;
 $("password").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+async function deleteInvitation(inviteId){
+  const inv=(window.currentInvitations||[]).find(x=>x.inviteId===inviteId);
+  if(!inv || !confirm("Supprimer "+(inv.title||inviteId)+" et toutes ses réponses ?")) return;
+  try{
+    await api("/api/invitations/"+encodeURIComponent(inviteId),{method:"DELETE"});
+    $("status").textContent="Invitation supprimée.";
+    $("status").className="status ok";
+    await load();
+  }catch(e){
+    $("status").textContent="Erreur : "+e.message;
+    $("status").className="status error";
+  }
+}
+
+function exportCsv(){
+  const invs=window.currentInvitations||[];
+  const rows=[["Invitation","Identifiant","Nom","Réponse","Nombre","Note","Question personnalisée","Date"]];
+  for(const i of invs){
+    for(const r of (i.responses||[])){
+      rows.push([i.title,i.inviteId,r.name,r.answer==="yes"?"Présent":"Absent",r.count||1,r.note||"",r.custom||"",new Date(r.createdAt||r.created_at).toLocaleString("fr-FR")]);
+    }
+  }
+  if(rows.length===1){ alert("Aucune réponse à exporter."); return; }
+  const csv=rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\r\n");
+  const blob=new Blob(["\\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="reponses-invitations.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+$("exportCsv").onclick=exportCsv;
 $("start").onclick=prepare;
 $("refresh").onclick=load;
 $("logout").onclick=logout;
