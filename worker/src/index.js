@@ -93,7 +93,7 @@ export default {
       }
 
       const responseMatch = url.pathname.match(
-        /^\\/api\\/invitations\\/([^/]+)\\/responses$/
+        /^\/api\/invitations\/([^/]+)\/responses$/
       );
 
       if (request.method === "POST" && responseMatch) {
@@ -182,7 +182,7 @@ export default {
       }
 
       const deleteMatch = url.pathname.match(
-        /^\\/api\\/invitations\\/([^/]+)$/
+        /^\/api\/invitations\/([^/]+)$/
       );
 
       if (request.method === "DELETE" && deleteMatch) {
