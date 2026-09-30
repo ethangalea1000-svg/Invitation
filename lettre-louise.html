@@ -6,10 +6,9 @@
 <title>Une invitation pour Louise</title>
 <style>
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#f7f2ea,#eee7dc);font-family:Georgia,"Times New Roman",serif;color:#333;display:flex;align-items:center;justify-content:center;padding:24px}
-.letter{width:min(720px,100%);background:#fffdf8;padding:52px 58px;border:1px solid #ddd2c2;box-shadow:0 18px 50px rgba(70,55,35,.12);position:relative}
-.letter:before{content:"";position:absolute;inset:12px;border:1px solid #eadfce;pointer-events:none}
+.letter{width:min(720px,100%);background:#fffdf8;padding:52px 58px;border:1px solid #ddd2c2;box-shadow:0 18px 50px rgba(70,55,35,.12);position:relative}.letter:before{content:"";position:absolute;inset:12px;border:1px solid #eadfce;pointer-events:none}
 h1{font-size:30px;font-weight:normal;text-align:center;margin:0 0 34px;color:#51483e}p{font-size:18px;line-height:1.75;margin:0 0 20px}.signature{margin-top:30px;text-align:right;font-style:italic}
-.actions{position:relative;margin-top:35px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.actions button{border:1px solid #b9aa97;background:#f4eee5;padding:13px 20px;border-radius:8px;font-family:inherit;font-size:15px;cursor:pointer}.actions button:hover{background:#eae0d2}.msg{text-align:center;margin-top:18px;font-size:15px;min-height:22px;color:#62594f}
+.actions{position:relative;margin-top:35px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.actions button{border:1px solid #b9aa97;background:#f4eee5;padding:13px 20px;border-radius:8px;font-family:inherit;font-size:15px;cursor:pointer}.actions button:hover{background:#eae0d2}.actions button:disabled{opacity:.6;cursor:wait}.msg{text-align:center;margin-top:18px;font-size:15px;min-height:22px;color:#62594f}
 @media(max-width:600px){.letter{padding:38px 28px}.letter:before{inset:8px}h1{font-size:25px}p{font-size:16px}}
 </style>
 </head>
@@ -22,21 +21,20 @@ h1{font-size:30px;font-weight:normal;text-align:center;margin:0 0 34px;color:#51
 <p>Si tu es disponible, ce sera avec plaisir. 🙂</p>
 <div class="signature">À bientôt !</div>
 <div class="actions">
-<button onclick="answer('Oui, je suis disponible !')">Oui, je suis disponible</button>
-<button onclick="answer('Non, je ne suis pas disponible.')">Je ne suis pas disponible</button>
+<button onclick="answer('yes',this)">Oui, je suis disponible</button>
+<button onclick="answer('no',this)">Je ne suis pas disponible</button>
 </div>
 <div class="msg" id="msg"></div>
 </main>
-
 <script>
 const API="https://invitation-api.ethan-galea1000.workers.dev";
 const INVITE_ID="lettre_louise_2026";
-function answer(answer){
-  const name=prompt("Quel est ton prénom ?");
-  if(!name||!name.trim()) return;
-  fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer,name:name.trim(),count:1,note:"",custom:""})})
-  .then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");document.getElementById("msg").textContent="Merci, ta réponse a bien été enregistrée.";})
-  .catch(e=>{document.getElementById("msg").textContent="Impossible d'enregistrer la réponse pour le moment : "+e.message;});
+async function answer(type,button){
+ const name=prompt("Quel est ton prénom ?");
+ if(!name||!name.trim())return;
+ const buttons=document.querySelectorAll(".actions button");buttons.forEach(b=>b.disabled=true);
+ const msg=document.getElementById("msg");msg.textContent="Enregistrement de ta réponse…";
+ try{const r=await fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer:type,name:name.trim(),count:1,note:"",custom:""})});const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");msg.textContent="Merci, ta réponse a bien été enregistrée."}catch(e){msg.textContent="Impossible d'enregistrer la réponse : "+e.message;buttons.forEach(b=>b.disabled=false)}
 }
 </script>
 </body></html>
