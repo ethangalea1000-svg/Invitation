@@ -27,5 +27,16 @@ h1{font-size:30px;font-weight:normal;text-align:center;margin:0 0 34px;color:#51
 </div>
 <div class="msg" id="msg"></div>
 </main>
-<script>function answer(t){document.getElementById('msg').textContent='Réponse enregistrée : '+t}</script>
+
+<script>
+const API="https://invitation-api.ethan-galea1000.workers.dev";
+const INVITE_ID="lettre_louise_2026";
+function answer(answer){
+  const name=prompt("Quel est ton prénom ?");
+  if(!name||!name.trim()) return;
+  fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer,name:name.trim(),count:1,note:"",custom:""})})
+  .then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");document.getElementById("msg").textContent="Merci, ta réponse a bien été enregistrée.";})
+  .catch(e=>{document.getElementById("msg").textContent="Impossible d'enregistrer la réponse pour le moment : "+e.message;});
+}
+</script>
 </body></html>
