@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Invitations</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0d1117;color:#eef2f7;font-family:Inter,Arial,sans-serif;padding:24px}.wrap{max-width:1000px;margin:auto}.panel{background:#151b23;border:1px solid #293241;border-radius:18px;padding:24px;margin-bottom:18px}h1{margin:0 0 8px}h2{font-size:18px}p,.hint{color:#aab4c3;line-height:1.5}.row{display:flex;gap:10px;flex-wrap:wrap}input{flex:1;min-width:240px;background:#0d1117;color:white;border:1px solid #354052;border-radius:10px;padding:12px}button{border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;background:#fff;color:#111}.secondary{background:#293241;color:#fff}.danger{background:#7f1d1d;color:#fff}.status{margin-top:12px;min-height:22px}.card{background:#0d1117;border:1px solid #293241;border-radius:14px;padding:16px;margin:10px 0}.meta{color:#9eabbc;font-size:14px}.responses{margin-top:12px}.response{padding:9px 0;border-top:1px solid #293241}.yes{color:#72e0a4}.no{color:#ff9b9b}
+</style>
+</head>
+<body><div class="wrap">
+<div class="panel">
+<h1>Administration des invitations</h1>
+<p>Ce panneau utilise le même code organisateur que le site Invitation. Le code est conservé uniquement dans le navigateur.</p>
+<div class="row"><input id="token" type="password" placeholder="Code organisateur"><button id="save">Enregistrer</button><button id="generate" class="secondary">Créer un code</button><button id="sync" class="secondary">Synchroniser les lettres</button></div>
+<div id="status" class="status"></div>
+</div>
+<div class="panel"><div class="row" style="justify-content:space-between;align-items:center"><h2>Réponses</h2><button id="refresh" class="secondary">Actualiser</button></div><div id="list"><p class="hint">Aucune donnée chargée.</p></div></div>
+</div>
+<script>
+const API="https://invitation-api.ethan-galea1000.workers.dev";
+const letters=[
+{inviteId:"lettre_louise_2026",title:"Invitation pour Louise",message:"Invitation personnelle de Louise",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"lettre_laure_2026",title:"Invitation pour Laure",message:"Invitation de Laure",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"lettre_iris_2026",title:"Invitation pour Iris",message:"Invitation poétique de Iris",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"rappel_iris_2026",title:"Rappel pour Iris",message:"Rappel poétique",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"rappel_louna_2026",title:"Rappel de mission — Louna",message:"Rappel de la mission du 19 août",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
+];
+let token=localStorage.getItem("invitationOrganizerToken")||"";
+tokenEl().value=token;
+function tokenEl(){return document.getElementById("token")}
+function msg(t){document.getElementById("status").textContent=t}
+function newToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function api(path,opt={}){const r=await fetch(API+path,{...opt,headers:{"Content-Type":"application/json","X-Organizer-Token":token,...(opt.headers||{})}});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"Erreur serveur");return j}
+document.getElementById("save").onclick=()=>{token=tokenEl().value.trim();localStorage.setItem("invitationOrganizerToken",token);msg(token.length>=20?"Code enregistré.":"Le code semble trop court.")};
+document.getElementById("generate").onclick=()=>{token=newToken();tokenEl().value=token;localStorage.setItem("invitationOrganizerToken",token);msg("Nouveau code créé et enregistré.")}
+document.getElementById("sync").onclick=async()=>{if(!token){msg("Crée ou saisis d'abord un code.");return}try{for(const x of letters)await api("/api/invitations",{method:"POST",body:JSON.stringify({token,invitation:x})});msg("Les lettres sont maintenant enregistrées dans l'Admin.");load()}catch(e){msg(e.message)}};
+document.getElementById("refresh").onclick=load;
+async function load(){if(!token){document.getElementById("list").innerHTML="<p class='hint'>Code organisateur requis.</p>";return}document.getElementById("list").innerHTML="<p>Chargement…</p>";try{const j=await api("/api/invitations");if(!j.invitations.length){document.getElementById("list").innerHTML="<p class='hint'>Aucune invitation. Clique sur « Synchroniser les lettres ».</p>";return}document.getElementById("list").innerHTML=j.invitations.map(i=>{const y=i.responses.filter(r=>r.answer==="yes").length,n=i.responses.filter(r=>r.answer==="no").length;return '<div class="card"><strong>'+esc(i.title)+'</strong><div class="meta">Présents : '+y+' · Absents : '+n+' · Total : '+i.responses.length+'</div><div class="responses">'+(i.responses.length?i.responses.map(r=>'<div class="response"><strong class="'+(r.answer==="yes"?"yes":"no")+'">'+(r.answer==="yes"?"Présent":"Absent")+'</strong> — '+esc(r.name)+' <span class="meta">· '+new Date(r.created_at||r.createdAt).toLocaleString("fr-FR")+'</span></div>').join(""):"<div class='meta'>Aucune réponse.</div>")+'</div></div>'}).join("")}catch(e){document.getElementById("list").innerHTML="<p class='hint'>"+esc(e.message)+"</p>"}}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+load();
+</script></body></html>
