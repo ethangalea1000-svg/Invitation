@@ -26,7 +26,7 @@ const DEFAULT_INVITATIONS = {
 const clean = (x = {}) => {
   const keys = [
     "inviteId", "type", "title", "message", "date", "time", "place",
-    "details", "host", "contact", "rsvp", "theme", "accent", "textColor",
+    "details", "host", "guestName", "contact", "rsvp", "theme", "accent", "textColor",
     "font", "compact", "symbol", "subtitle", "image", "askGuests",
     "askNote", "customQuestion"
   ];
