@@ -5,47 +5,77 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin — Invitation</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#172033;font-family:Arial,Helvetica,sans-serif;padding:18px}.wrap{max-width:900px;margin:auto}
-.card{background:white;border:1px solid #dfe5ee;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 5px 18px rgba(20,30,50,.06)}
-h1{margin:0 0 8px;font-size:28px}.sub{color:#657085;margin:0 0 18px;line-height:1.5}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.step{background:#f5f7fb;border-radius:14px;padding:14px}.step b{display:block;margin-bottom:5px}.step span{color:#657085;font-size:14px;line-height:1.4}
-button{border:0;border-radius:11px;padding:12px 16px;font-weight:700;cursor:pointer}.primary{background:#172033;color:#fff}.secondary{background:#e9edf4;color:#172033}.danger{background:#ffe5e5;color:#9b2222}
-.status{margin-top:12px;min-height:22px;color:#465268}.code{font-family:monospace;background:#f1f3f7;padding:10px;border-radius:10px;word-break:break-all;margin-top:10px}
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#f5f7fb;border-radius:14px;padding:14px}.stat b{display:block;font-size:25px}.stat span{font-size:13px;color:#657085}
-.inv{border-top:1px solid #e4e8ef;padding:16px 0}.inv:first-child{border-top:0}.inv h3{margin:0 0 5px}.meta{color:#657085;font-size:13px}.response{margin-top:10px;padding:11px 12px;border-radius:11px;background:#f7f8fa}.yes{color:#137a43;font-weight:700}.no{color:#b42318;font-weight:700}
-.empty{color:#7a8598;padding:8px 0}.actions{display:flex;gap:10px;flex-wrap:wrap}
-@media(max-width:650px){.steps,.summary{grid-template-columns:1fr 1fr}}@media(max-width:430px){.steps,.summary{grid-template-columns:1fr}}
+*{box-sizing:border-box}
+body{margin:0;background:#f5f7fb;color:#172033;font-family:Arial,Helvetica,sans-serif;padding:18px}
+.wrap{max-width:900px;margin:auto}
+.card{background:#fff;border:1px solid #dfe5ee;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 5px 18px rgba(20,30,50,.06)}
+h1{margin:0 0 8px;font-size:28px}
+.sub{color:#657085;margin:0 0 18px;line-height:1.5}
+input{width:100%;padding:13px 14px;border:1px solid #cfd6e2;border-radius:11px;font-size:16px;margin:8px 0 12px}
+button{border:0;border-radius:11px;padding:12px 16px;font-weight:700;cursor:pointer}
+.primary{background:#172033;color:#fff}.secondary{background:#e9edf4;color:#172033}
+.status{margin-top:12px;min-height:22px;color:#465268}.error{color:#b42318}.ok{color:#137a43}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.step{background:#f5f7fb;border-radius:14px;padding:14px}.step b{display:block;margin-bottom:5px}
+.step span{color:#657085;font-size:14px;line-height:1.4}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:#f5f7fb;border-radius:14px;padding:14px}.stat b{display:block;font-size:25px}.stat span{font-size:13px;color:#657085}
+.inv{border-top:1px solid #e4e8ef;padding:16px 0}.inv:first-child{border-top:0}.inv h3{margin:0 0 5px}
+.meta{color:#657085;font-size:13px}.response{margin-top:10px;padding:11px 12px;border-radius:11px;background:#f7f8fa}
+.yes{color:#137a43;font-weight:700}.no{color:#b42318;font-weight:700}.empty{color:#7a8598;padding:8px 0}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.hidden{display:none}
+@media(max-width:650px){.steps,.summary{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.steps,.summary{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="card">
-<h1>Administration des invitations</h1>
-<p class="sub">Ici, tu vois les réponses des personnes invitées. Tu n'as normalement rien à configurer à chaque réponse.</p>
-<div class="steps">
-<div class="step"><b>1. Préparer</b><span>Un code organisateur est créé automatiquement.</span></div>
-<div class="step"><b>2. Répondre</b><span>Les invités répondent directement depuis leur lettre.</span></div>
-<div class="step"><b>3. Voir</b><span>Les réponses apparaissent ici automatiquement.</span></div>
-</div>
-<div class="actions" style="margin-top:18px">
-<button class="primary" id="start">Activer / préparer les invitations</button>
-<button class="secondary" id="refresh">Actualiser les réponses</button>
-</div>
-<div id="status" class="status"></div>
-<div id="codeBox" style="display:none"><b>Ton code organisateur</b><div class="code" id="code"></div><p class="meta">Il est enregistré uniquement sur cet appareil. Ne le mets jamais dans une lettre publique.</p></div>
+
+<div id="loginCard" class="card">
+  <h1>Espace administrateur</h1>
+  <p class="sub">Cette page est privée. Le mot de passe est vérifié par le serveur avant d'afficher les invitations et les réponses.</p>
+  <label for="password"><b>Mot de passe</b></label>
+  <input id="password" type="password" autocomplete="current-password" placeholder="Entre ton mot de passe">
+  <button class="primary" id="login">Se connecter</button>
+  <div id="loginStatus" class="status"></div>
 </div>
 
-<div class="card">
-<h2 style="margin-top:0">Résumé</h2>
-<div id="summary" class="summary"><div class="stat"><b>0</b><span>Invitations</span></div><div class="stat"><b>0</b><span>Réponses</span></div><div class="stat"><b>0</b><span>Présents</span></div><div class="stat"><b>0</b><span>Absents</span></div></div>
+<div id="app" class="hidden">
+  <div class="card">
+    <h1>Administration des invitations</h1>
+    <p class="sub">Tu es connecté. Ici, tu peux préparer les invitations et voir les réponses.</p>
+    <div class="steps">
+      <div class="step"><b>1. Préparer</b><span>Les 5 invitations sont reliées au serveur.</span></div>
+      <div class="step"><b>2. Répondre</b><span>Les invités répondent depuis leur lettre.</span></div>
+      <div class="step"><b>3. Voir</b><span>Les réponses apparaissent ici.</span></div>
+    </div>
+    <div class="actions" style="margin-top:18px">
+      <button class="primary" id="start">Activer / préparer les invitations</button>
+      <button class="secondary" id="refresh">Actualiser les réponses</button>
+      <button class="secondary" id="logout">Se déconnecter</button>
+    </div>
+    <div id="status" class="status"></div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Résumé</h2>
+    <div id="summary" class="summary">
+      <div class="stat"><b>0</b><span>Invitations</span></div>
+      <div class="stat"><b>0</b><span>Réponses</span></div>
+      <div class="stat"><b>0</b><span>Présents</span></div>
+      <div class="stat"><b>0</b><span>Absents</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Réponses des invités</h2>
+    <p class="sub">Chaque invitation est séparée ci-dessous.</p>
+    <div id="list"><div class="empty">Chargement…</div></div>
+  </div>
+</div>
 </div>
 
-<div class="card">
-<h2 style="margin-top:0">Réponses des invités</h2>
-<p class="sub">Chaque invitation est séparée ci-dessous.</p>
-<div id="list"><div class="empty">Clique sur « Activer / préparer les invitations ».</div></div>
-</div>
-</div>
 <script>
 const API="https://invitation-api.ethan-galea1000.workers.dev";
 const letters=[
@@ -55,35 +85,118 @@ const letters=[
 {inviteId:"rappel_iris_2026",title:"Rappel Iris",message:"Rappel pour Iris",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
 {inviteId:"rappel_louna_2026",title:"Rappel Louna",message:"Rappel de mission pour Louna",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
 ];
-let token=localStorage.getItem("invitationOrganizerToken")||"";
+
+let password=sessionStorage.getItem("invitationAdminPassword")||"";
 const $=id=>document.getElementById(id);
-function newToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return [...a].map(x=>x.toString(16).padStart(2,"0")).join("")}
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-async function api(path,opt={}){const r=await fetch(API+path,{...opt,headers:{"Content-Type":"application/json","X-Organizer-Token":token,...(opt.headers||{})}});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"Erreur serveur");return j}
-function showCode(){if(token){$("codeBox").style.display="block";$("code").textContent=token}}
+
+async function api(path,opt={}){
+  const headers={"Content-Type":"application/json","X-Admin-Password":password,...(opt.headers||{})};
+  const r=await fetch(API+path,{...opt,headers});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error||"Erreur serveur");
+  return j;
+}
+
+async function login(){
+  const value=$("password").value;
+  if(!value){$("loginStatus").textContent="Entre ton mot de passe.";return}
+  $("loginStatus").textContent="Vérification…";
+  try{
+    await fetch(API+"/api/admin/login",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({password:value})
+    }).then(async r=>{
+      const j=await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error(j.error||"Connexion impossible");
+      return j;
+    });
+    password=value;
+    sessionStorage.setItem("invitationAdminPassword",password);
+    showApp();
+    await load();
+  }catch(e){
+    $("loginStatus").textContent=e.message;
+    $("loginStatus").className="status error";
+  }
+}
+
+function showApp(){
+  $("loginCard").classList.add("hidden");
+  $("app").classList.remove("hidden");
+}
+
+function logout(){
+  password="";
+  sessionStorage.removeItem("invitationAdminPassword");
+  $("app").classList.add("hidden");
+  $("loginCard").classList.remove("hidden");
+  $("password").value="";
+  $("loginStatus").textContent="Déconnecté.";
+  $("loginStatus").className="status";
+}
+
 async function prepare(){
- if(!token){token=newToken();localStorage.setItem("invitationOrganizerToken",token)}
- showCode();$("status").textContent="Préparation des 5 invitations…";
- try{
-  for(const invitation of letters) await api("/api/invitations",{method:"POST",body:JSON.stringify({token,invitation})});
-  $("status").textContent="C'est prêt. Les 5 invitations sont maintenant reliées au système de réponses.";
-  await load();
- }catch(e){$("status").textContent="Erreur : "+e.message}
+  $("status").textContent="Préparation des 5 invitations…";
+  try{
+    for(const invitation of letters){
+      await api("/api/invitations",{method:"POST",body:JSON.stringify({invitation})});
+    }
+    $("status").textContent="C'est prêt. Les 5 invitations sont reliées au système de réponses.";
+    $("status").className="status ok";
+    await load();
+  }catch(e){
+    $("status").textContent="Erreur : "+e.message;
+    $("status").className="status error";
+  }
 }
+
 async function load(){
- if(!token){$("list").innerHTML='<div class="empty">Clique d’abord sur « Activer / préparer les invitations ».</div>';return}
- try{
-  const j=await api("/api/invitations"),invs=j.invitations||[],rs=invs.flatMap(i=>i.responses||[]);
-  const yes=rs.filter(r=>r.answer==="yes").length,no=rs.filter(r=>r.answer==="no").length;
-  $("summary").innerHTML='<div class="stat"><b>'+invs.length+'</b><span>Invitations</span></div><div class="stat"><b>'+rs.length+'</b><span>Réponses</span></div><div class="stat"><b>'+yes+'</b><span>Présents</span></div><div class="stat"><b>'+no+'</b><span>Absents</span></div>';
-  $("list").innerHTML=invs.map(i=>{
-   const responses=i.responses||[];
-   return '<div class="inv"><h3>'+esc(i.title)+'</h3><div class="meta">'+esc(i.date||"")+' · '+esc(i.time||"")+'</div>'+
-   (responses.length?responses.map(r=>'<div class="response"><span class="'+(r.answer==="yes"?"yes":"no")+'">'+(r.answer==="yes"?"✓ Présent":"✕ Absent")+'</span> — <b>'+esc(r.name)+'</b>'+(Number(r.count)>1?" · "+r.count+" personnes":"")+(r.note?"<br>"+esc(r.note):"")+'<div class="meta">'+new Date(r.createdAt||r.created_at).toLocaleString("fr-FR")+'</div></div>').join(""):'<div class="empty">Aucune réponse pour le moment.</div>')+'</div>'
-  }).join("")||'<div class="empty">Aucune invitation préparée.</div>';
- }catch(e){$("list").innerHTML='<div class="empty">Impossible de charger les réponses : '+esc(e.message)+'</div>'}
+  try{
+    const j=await api("/api/invitations");
+    const invs=j.invitations||[];
+    const rs=invs.flatMap(i=>i.responses||[]);
+    const yes=rs.filter(r=>r.answer==="yes").length;
+    const no=rs.filter(r=>r.answer==="no").length;
+    $("summary").innerHTML=
+      '<div class="stat"><b>'+invs.length+'</b><span>Invitations</span></div>'+
+      '<div class="stat"><b>'+rs.length+'</b><span>Réponses</span></div>'+
+      '<div class="stat"><b>'+yes+'</b><span>Présents</span></div>'+
+      '<div class="stat"><b>'+no+'</b><span>Absents</span></div>';
+
+    $("list").innerHTML=invs.map(i=>{
+      const responses=i.responses||[];
+      return '<div class="inv"><h3>'+esc(i.title)+'</h3>'+
+        '<div class="meta">'+esc(i.date||"")+' · '+esc(i.time||"")+'</div>'+
+        (responses.length?
+          responses.map(r=>
+            '<div class="response">'+
+            '<span class="'+(r.answer==="yes"?"yes":"no")+'">'+(r.answer==="yes"?"✓ Présent":"✕ Absent")+'</span> — '+
+            '<b>'+esc(r.name)+'</b>'+
+            (Number(r.count)>1?" · "+r.count+" personnes":"")+
+            (r.note?"<br>"+esc(r.note):"")+
+            '<div class="meta">'+new Date(r.createdAt||r.created_at).toLocaleString("fr-FR")+'</div>'+
+            '</div>'
+          ).join("")
+          :'<div class="empty">Aucune réponse pour le moment.</div>')+
+        '</div>';
+    }).join("")||'<div class="empty">Aucune invitation préparée.</div>';
+  }catch(e){
+    if(e.message==="Mot de passe incorrect.") logout();
+    $("list").innerHTML='<div class="empty">Impossible de charger les réponses : '+esc(e.message)+'</div>';
+  }
 }
-$("start").onclick=prepare;$("refresh").onclick=load;showCode();if(token)load();
+
+$("login").onclick=login;
+$("password").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+$("start").onclick=prepare;
+$("refresh").onclick=load;
+$("logout").onclick=logout;
+
+if(password){
+  api("/api/invitations").then(()=>{showApp();load()}).catch(()=>logout());
+}
 </script>
 </body>
 </html>
