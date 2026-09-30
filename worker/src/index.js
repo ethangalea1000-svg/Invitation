@@ -278,6 +278,22 @@ export default {
         return json({ invitations });
       }
 
+      const deleteResponseMatch = url.pathname.match(
+        /^\/api\/invitations\/([^/]+)\/responses\/([^/]+)$/
+      );
+
+      if (request.method === "DELETE" && deleteResponseMatch) {
+        const inviteId = decodeURIComponent(deleteResponseMatch[1]);
+        const responseId = decodeURIComponent(deleteResponseMatch[2]);
+
+        await env.DB
+          .prepare("DELETE FROM responses WHERE id = ? AND invite_id = ?")
+          .bind(responseId, inviteId)
+          .run();
+
+        return json({ ok: true });
+      }
+
       const deleteMatch = url.pathname.match(
         /^\/api\/invitations\/([^/]+)$/
       );
