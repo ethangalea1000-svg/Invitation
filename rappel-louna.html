@@ -46,12 +46,14 @@ Donc idéalement avant le <strong>18 août</strong>.
 </main>
 
 <script>
+const API="https://invitation-api.ethan-galea1000.workers.dev";
+const INVITE_ID="rappel_louna_2026";
 function answer(type){
- const box=document.getElementById('answer');
- box.style.display='block';
- box.textContent=type==='yes'
- ? '🎉 Mission validée ! Le QG est officiellement prévenu.'
- : '😢 Mission annulée… Le QG accuse réception. Merci d’avoir répondu !';
+ const name=prompt("Quel est ton prénom ?");
+ if(!name||!name.trim())return;
+ fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer:type,name:name.trim(),count:1,note:"",custom:""})})
+ .then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");const box=document.getElementById("answer");box.style.display="block";box.textContent=type==="yes"?"🎉 Mission validée ! Le QG est officiellement prévenu.":"😢 Mission annulée… Le QG accuse réception. Merci d’avoir répondu !";})
+ .catch(e=>{const box=document.getElementById("answer");box.style.display="block";box.textContent="Impossible d'enregistrer la réponse pour le moment : "+e.message;});
 }
 </script>
 </body>
