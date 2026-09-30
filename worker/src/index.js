@@ -2,7 +2,7 @@
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type,X-Organizer-Token",
+  "Access-Control-Allow-Headers": "Content-Type,X-Admin-Password",
   "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS"
 };
 
@@ -11,16 +11,6 @@ const json = (body, status = 200) =>
     status,
     headers: { "Content-Type": "application/json", ...CORS }
   });
-
-const sha = async (value) => {
-  const bytes = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(value)
-  );
-  return [...new Uint8Array(bytes)]
-    .map((x) => x.toString(16).padStart(2, "0"))
-    .join("");
-};
 
 const id = () => crypto.randomUUID();
 
@@ -43,10 +33,23 @@ const clean = (x = {}) => {
   return out;
 };
 
-const organizerToken = (request) =>
-  request.headers.get("X-Organizer-Token") ||
-  new URL(request.url).searchParams.get("token") ||
-  "";
+const adminPassword = (request) =>
+  request.headers.get("X-Admin-Password") || "";
+
+const requireAdmin = (request, env) => {
+  if (!env.ADMIN_PASSWORD) {
+    return json(
+      { error: "Le mot de passe administrateur n'est pas encore configuré." },
+      503
+    );
+  }
+
+  if (adminPassword(request) !== env.ADMIN_PASSWORD) {
+    return json({ error: "Mot de passe incorrect." }, 401);
+  }
+
+  return null;
+};
 
 export default {
   async fetch(request, env) {
@@ -57,17 +60,40 @@ export default {
     try {
       const url = new URL(request.url);
 
-      if (request.method === "POST" && url.pathname === "/api/invitations") {
-        const body = await request.json();
-
-        if (!body.token || !body.invitation?.inviteId) {
+      // Vérification du mot de passe administrateur.
+      if (request.method === "POST" && url.pathname === "/api/admin/login") {
+        if (!env.ADMIN_PASSWORD) {
           return json(
-            { error: "Code organisateur ou identifiant manquant." },
-            400
+            { ok: false, error: "Le mot de passe administrateur n'est pas configuré." },
+            503
           );
         }
 
-        const ownerTokenHash = await sha(body.token);
+        const body = await request.json().catch(() => ({}));
+        if (String(body.password || "") !== env.ADMIN_PASSWORD) {
+          return json({ ok: false, error: "Mot de passe incorrect." }, 401);
+        }
+
+        return json({ ok: true });
+      }
+
+      // Toutes les opérations d'administration sont protégées.
+      if (
+        (request.method === "POST" && url.pathname === "/api/invitations") ||
+        (request.method === "GET" && url.pathname === "/api/invitations") ||
+        (request.method === "DELETE" && /^\/api\/invitations\/[^/]+$/.test(url.pathname))
+      ) {
+        const authError = requireAdmin(request, env);
+        if (authError) return authError;
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/invitations") {
+        const body = await request.json();
+
+        if (!body.invitation?.inviteId) {
+          return json({ error: "Identifiant d'invitation manquant." }, 400);
+        }
+
         const invitation = clean(body.invitation);
         const now = Date.now();
 
@@ -82,7 +108,7 @@ export default {
         )
           .bind(
             invitation.inviteId,
-            ownerTokenHash,
+            "admin-password",
             JSON.stringify(invitation),
             now,
             now
@@ -96,6 +122,7 @@ export default {
         /^\/api\/invitations\/([^/]+)\/responses$/
       );
 
+      // Les invités peuvent répondre sans connaître le mot de passe admin.
       if (request.method === "POST" && responseMatch) {
         const inviteId = decodeURIComponent(responseMatch[1]);
         const body = await request.json();
@@ -137,18 +164,8 @@ export default {
       }
 
       if (request.method === "GET" && url.pathname === "/api/invitations") {
-        const token = organizerToken(request);
-
-        if (!token) {
-          return json({ error: "Code organisateur requis." }, 401);
-        }
-
-        const ownerTokenHash = await sha(token);
         const rows = await env.DB
-          .prepare(
-            "SELECT * FROM invitations WHERE owner_token_hash = ? ORDER BY updated_at DESC"
-          )
-          .bind(ownerTokenHash)
+          .prepare("SELECT * FROM invitations ORDER BY updated_at DESC")
           .all();
 
         const invitations = [];
@@ -186,28 +203,7 @@ export default {
       );
 
       if (request.method === "DELETE" && deleteMatch) {
-        const token = organizerToken(request);
-
-        if (!token) {
-          return json({ error: "Code organisateur requis." }, 401);
-        }
-
         const inviteId = decodeURIComponent(deleteMatch[1]);
-        const ownerTokenHash = await sha(token);
-
-        const row = await env.DB
-          .prepare(
-            "SELECT invite_id FROM invitations WHERE invite_id = ? AND owner_token_hash = ?"
-          )
-          .bind(inviteId, ownerTokenHash)
-          .first();
-
-        if (!row) {
-          return json(
-            { error: "Invitation introuvable ou code incorrect." },
-            404
-          );
-        }
 
         await env.DB
           .prepare("DELETE FROM responses WHERE invite_id = ?")
@@ -215,10 +211,8 @@ export default {
           .run();
 
         await env.DB
-          .prepare(
-            "DELETE FROM invitations WHERE invite_id = ? AND owner_token_hash = ?"
-          )
-          .bind(inviteId, ownerTokenHash)
+          .prepare("DELETE FROM invitations WHERE invite_id = ?")
+          .bind(inviteId)
           .run();
 
         return json({ ok: true });
@@ -230,10 +224,9 @@ export default {
 
       return json({ error: "Route inconnue." }, 404);
     } catch (error) {
-      return json(
-        { error: error?.message || "Erreur serveur." },
-        500
-      );
+      return json({
+        error: error?.message || "Erreur serveur."
+      }, 500);
     }
   }
 };
