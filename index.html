@@ -48,6 +48,7 @@
       <label>Lieu<input id="place" maxlength="140" placeholder="Chez moi, Saint-Rémy-de-Provence"></label>
       <label>Détails supplémentaires<textarea id="details" maxlength="400" placeholder="Tenue, matériel, consignes, programme…"></textarea></label>
       <label>Nom de l’organisateur<input id="host" maxlength="60" value="Ethan"></label>
+      <label>Nom de l’invité (laisser vide pour une invitation de groupe)<input id="guestName" maxlength="60" placeholder="Ex. Louise"></label>
     </div>
   </div>
 
@@ -144,7 +145,7 @@
 <div class="response-modal hidden" id="responseModal"><div class="modal-card response-card">
   <button class="close" id="closeResponse">×</button>
   <p class="eyebrow">RÉPONSE</p><h2 id="responseTitle">Ta réponse</h2>
-  <label>Ton prénom / nom<input id="guestName" maxlength="60" placeholder="Ex. Léa"></label>
+  <label id="guestNameWrap">Ton prénom / nom<input id="guestName" maxlength="60" placeholder="Ex. Léa"></label>
   <label id="guestCountWrap">Nombre de personnes<input id="guestCount" type="number" min="1" max="20" value="1"></label>
   <label id="guestNoteWrap">Message<textarea id="guestNote" maxlength="300" placeholder="Un petit mot…"></textarea></label>
   <label id="guestCustomWrap">Question<input id="guestCustom" maxlength="160"></label>
