@@ -5,4 +5,4 @@ compatibility_date = "2026-09-29"
 [[d1_databases]]
 binding = "DB"
 database_name = "invitation-db"
-database_id = "REMPLACE_PAR_L_ID_D1"
+database_id = "84234cea-2810-412d-8b48-9b715f3be818"
