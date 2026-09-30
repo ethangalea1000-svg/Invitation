@@ -18,6 +18,16 @@ jobs:
       - name: Récupérer le dépôt
         uses: actions/checkout@v6
 
+      - name: Installer le mot de passe admin du Worker
+        if: ${{ secrets.INVITATION_ADMIN_PASSWORD != '' }}
+        working-directory: worker
+        env:
+          ADMIN_PASSWORD: ${{ secrets.INVITATION_ADMIN_PASSWORD }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          printf '%s' "$ADMIN_PASSWORD" | npx wrangler secret put ADMIN_PASSWORD
+
       - name: Déployer le Worker Cloudflare
         uses: cloudflare/wrangler-action@v4
         with:
