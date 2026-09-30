@@ -184,6 +184,7 @@ async function load(){
             (Number(r.count)>1?" · "+r.count+" personnes":"")+
             (r.note?"<br>"+esc(r.note):"")+
             '<div class="meta">'+new Date(r.createdAt||r.created_at).toLocaleString("fr-FR")+'</div>'+
+            '<div class="actions" style="margin-top:8px"><button class="secondary" onclick="deleteResponse(\''+esc(r.id)+'\',\''+esc(i.inviteId)+'\')">Supprimer cette réponse</button></div>'+
             '</div>'
           ).join("")
           :'<div class="empty">Aucune réponse pour le moment.</div>')+
@@ -198,6 +199,19 @@ async function load(){
 
 $("login").onclick=login;
 $("password").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+async function deleteResponse(responseId, inviteId){
+  if(!confirm("Supprimer uniquement cette réponse ?")) return;
+  try{
+    await api("/api/invitations/"+encodeURIComponent(inviteId)+"/responses/"+encodeURIComponent(responseId),{method:"DELETE"});
+    $("status").textContent="Réponse supprimée.";
+    $("status").className="status ok";
+    await load();
+  }catch(e){
+    $("status").textContent="Erreur : "+e.message;
+    $("status").className="status error";
+  }
+}
+
 async function deleteInvitation(inviteId){
   const inv=(window.currentInvitations||[]).find(x=>x.inviteId===inviteId);
   if(!inv || !confirm("Supprimer "+(inv.title||inviteId)+" et toutes ses réponses ?")) return;
