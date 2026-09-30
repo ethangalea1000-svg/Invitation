@@ -2,8 +2,9 @@
 // Sécurité admin : le secret ADMIN_PASSWORD est injecté par GitHub Actions dans Cloudflare.
 
 const CORS = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://ethangalea1000-svg.github.io",
   "Access-Control-Allow-Headers": "Content-Type,X-Admin-Password",
+  "Access-Control-Allow-Credentials": "true",
   "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS"
 };
 
@@ -42,22 +43,84 @@ const clean = (x = {}) => {
   return out;
 };
 
+const SESSION_COOKIE = "invitation_admin_session";
+const SESSION_MAX_AGE = 60 * 60 * 24 * 365 * 10;
+
+const base64url = bytes => {
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/g, "");
+};
+
+const fromBase64url = value => {
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((value.length + 3) % 4);
+  const binary = atob(padded);
+  return Uint8Array.from(binary, c => c.charCodeAt(0));
+};
+
+const sessionKey = password => crypto.subtle.importKey(
+  "raw", new TextEncoder().encode(password),
+  { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]
+);
+
+const createSession = async password => {
+  const payload = JSON.stringify({ iat: Date.now(), exp: Date.now() + SESSION_MAX_AGE * 1000 });
+  const bytes = new TextEncoder().encode(payload);
+  const signature = await crypto.subtle.sign("HMAC", await sessionKey(password), bytes);
+  return base64url(bytes) + "." + base64url(new Uint8Array(signature));
+};
+
+const readCookie = (request, name) => {
+  const header = request.headers.get("Cookie") || "";
+  const part = header.split(";").map(x => x.trim()).find(x => x.startsWith(name + "="));
+  return part ? decodeURIComponent(part.slice(name.length + 1)) : "";
+};
+
+const validSession = async (request, env) => {
+  const value = readCookie(request, SESSION_COOKIE);
+  if (!value || !env.ADMIN_PASSWORD) return false;
+  const parts = value.split(".");
+  if (parts.length !== 2) return false;
+  try {
+    const payloadBytes = fromBase64url(parts[0]);
+    const payload = JSON.parse(new TextDecoder().decode(payloadBytes));
+    if (!payload.exp || Date.now() >= payload.exp) return false;
+    return await crypto.subtle.verify(
+      "HMAC", await sessionKey(env.ADMIN_PASSWORD),
+      fromBase64url(parts[1]), payloadBytes
+    );
+  } catch {
+    return false;
+  }
+};
+
+const sessionCookie = value =>
+  SESSION_COOKIE + "=" + encodeURIComponent(value) +
+  "; Max-Age=" + SESSION_MAX_AGE + "; Path=/; HttpOnly; Secure; SameSite=None";
+
+const clearSessionCookie = () =>
+  SESSION_COOKIE + "=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=None";
+
+const withCookie = (body, cookie) => {
+  const response = json(body);
+  const headers = new Headers(response.headers);
+  headers.set("Set-Cookie", cookie);
+  return new Response(response.body, { status: response.status, headers });
+};
+
 const adminPassword = (request) =>
   request.headers.get("X-Admin-Password") || "";
 
-const requireAdmin = (request, env) => {
+const requireAdmin = async (request, env) => {
   if (!env.ADMIN_PASSWORD) {
     return json(
       { error: "Le mot de passe administrateur n'est pas encore configuré." },
       503
     );
   }
-
-  if (adminPassword(request) !== env.ADMIN_PASSWORD) {
-    return json({ error: "Mot de passe incorrect." }, 401);
-  }
-
-  return null;
+  if (await validSession(request, env)) return null;
+  if (adminPassword(request) === env.ADMIN_PASSWORD) return null;
+  return json({ error: "Session administrateur absente ou expirée." }, 401);
 };
 
 export default {
@@ -83,7 +146,12 @@ export default {
           return json({ ok: false, error: "Mot de passe incorrect." }, 401);
         }
 
-        return json({ ok: true });
+        const session = await createSession(env.ADMIN_PASSWORD);
+        return withCookie({ ok: true }, sessionCookie(session));
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/admin/logout") {
+        return withCookie({ ok: true }, clearSessionCookie());
       }
 
       // Toutes les opérations d'administration sont protégées.
@@ -92,7 +160,7 @@ export default {
         (request.method === "GET" && url.pathname === "/api/invitations") ||
         (request.method === "DELETE" && /^\/api\/invitations\/[^/]+$/.test(url.pathname))
       ) {
-        const authError = requireAdmin(request, env);
+        const authError = await requireAdmin(request, env);
         if (authError) return authError;
       }
 
