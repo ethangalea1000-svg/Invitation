@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lettre pour Iris</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px;background:radial-gradient(circle at top,#fff8e8,#e7d5ae);color:#3f3326;font-family:Georgia,"Times New Roman",serif;display:flex;justify-content:center;align-items:center}
+.letter{position:relative;width:min(780px,100%);padding:58px 64px;background:#fbf1d8;border:1px solid #b99b63;box-shadow:0 20px 55px rgba(70,48,20,.25)}
+.letter:before{content:"";position:absolute;inset:13px;border:1px solid #cdb785;pointer-events:none}.ornament{text-align:center;font-size:28px;color:#876b3c;margin-bottom:18px}h1{text-align:center;font-weight:normal;font-size:30px;margin:0 0 34px;color:#5a4427}p{font-size:18px;line-height:1.9;margin:0 0 22px;text-align:justify}.closing{text-align:right;font-style:italic;margin-top:28px}.actions{position:relative;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:34px}.actions button{font-family:Georgia,serif;font-size:15px;padding:12px 20px;border:1px solid #a98a52;background:#f5e7c5;color:#4a3924;cursor:pointer}.actions button:hover{background:#ead7ad}.msg{text-align:center;margin-top:16px;min-height:22px;font-style:italic}
+@media(max-width:600px){.letter{padding:42px 28px}.letter:before{inset:8px}h1{font-size:25px}p{font-size:16px;line-height:1.75}}
+</style>
+</head>
+<body>
+<main class="letter">
+<div class="ornament">✦ ❦ ✦</div>
+<h1>Une invitation pour Iris</h1>
+<p>Ô très gracieuse Iris, éclatante perle des jardins de l'amitié,</p>
+<p>Que les vents les plus délicats portent jusqu'à toi ces quelques paroles.</p>
+<p>En ma demeure de Saint-Rémy-de-Provence, le mercredi 19 août, de 14 h 30 à 18 h 30, quelques âmes choisies auront le bonheur de se réunir autour de jeux, de conversations agréables et des eaux cristallines de la piscine.</p>
+<p>J'ai également convié Laure, Louna, Louise et Isaac.</p>
+<p>Si les étoiles consentent à guider tes pas jusqu'à cette modeste assemblée, je serai comblé par l'honneur de ta présence. ✨</p>
+<div class="closing">Avec toute mon amitié</div>
+<div class="actions">
+<button onclick="answer('Oui, je serai présente ✨')">Oui, je serai présente ✨</button>
+<button onclick="answer('Non, je ne pourrai pas.')">Je ne pourrai pas</button>
+</div>
+<div class="msg" id="msg"></div>
+</main>
+<script>function answer(t){document.getElementById('msg').textContent='Réponse enregistrée : '+t}</script>
+</body>
+</html>
