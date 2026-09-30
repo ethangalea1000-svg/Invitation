@@ -69,8 +69,13 @@ button{border:0;border-radius:11px;padding:12px 16px;font-weight:700;cursor:poin
   </div>
 
   <div class="card">
-    <h2 style="margin-top:0">Réponses des invités</h2>
-    <p class="sub">Chaque invitation est séparée ci-dessous.</p>
+    <div class="actions" style="justify-content:space-between;align-items:center">
+      <div>
+        <h2 style="margin:0">Réponses des invités</h2>
+        <p class="sub" style="margin:5px 0 0">Consulte, exporte ou supprime les invitations et leurs réponses.</p>
+      </div>
+      <button class="secondary" id="exportCsv">Exporter en CSV</button>
+    </div>
     <div id="list"><div class="empty">Chargement…</div></div>
   </div>
 </div>
