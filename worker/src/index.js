@@ -1,4 +1,5 @@
 // Invitation API — déploiement automatique via GitHub Actions / Cloudflare Workers
+// Correctif de déploiement : version serveur 2026-09-30-2
 // Sécurité admin : le secret ADMIN_PASSWORD est injecté par GitHub Actions dans Cloudflare.
 
 const CORS = {
