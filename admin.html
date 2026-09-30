@@ -91,13 +91,13 @@ const letters=[
 {inviteId:"rappel_louna_2026",title:"Rappel Louna",message:"Rappel de mission pour Louna",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
 ];
 
-let password=localStorage.getItem("invitationAdminPassword")||"";
+let password="";
 const $=id=>document.getElementById(id);
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 
 async function api(path,opt={}){
   const headers={"Content-Type":"application/json","X-Admin-Password":password,...(opt.headers||{})};
-  const fetchOptions={...opt,headers,cache:"no-store"};
+  const fetchOptions={...opt,headers,cache:"no-store",credentials:"include"};
   const r=await fetch(API+path,fetchOptions);
   const j=await r.json().catch(()=>({}));
   if(!r.ok) throw new Error(j.error||"Erreur serveur");
@@ -112,6 +112,7 @@ async function login(){
     await fetch(API+"/api/admin/login",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
+      credentials:"include",
       body:JSON.stringify({password:value})
     }).then(async r=>{
       const j=await r.json().catch(()=>({}));
@@ -119,7 +120,6 @@ async function login(){
       return j;
     });
     password=value;
-    localStorage.setItem("invitationAdminPassword",password);
     showApp();
     await load();
   }catch(e){
@@ -134,8 +134,8 @@ function showApp(){
 }
 
 function logout(){
+  fetch(API+"/api/admin/logout",{method:"POST",credentials:"include"}).catch(()=>{});
   password="";
-  localStorage.removeItem("invitationAdminPassword");
   $("app").classList.add("hidden");
   $("loginCard").classList.remove("hidden");
   $("password").value="";
@@ -253,9 +253,7 @@ $("refresh").onclick=async()=>{
 };
 $("logout").onclick=logout;
 
-if(password){
-  api("/api/invitations").then(()=>{showApp();load()}).catch(()=>logout());
-}
+api("/api/invitations").then(()=>{showApp();load()}).catch(()=>{});
 </script>
 </body>
 </html>
