@@ -1,30 +1,6 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Une invitation pour Jacques</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:linear-gradient(135deg,#eef3f7,#dce5ec);font-family:'Montserrat',Arial,sans-serif;color:#243342;display:flex;align-items:center;justify-content:center;padding:24px}
-.card{width:min(720px,100%);background:#fff;border-radius:22px;padding:44px;box-shadow:0 18px 50px rgba(35,50,65,.16);border:1px solid #ccd7e0}
-.badge{text-align:center;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#687887;margin-bottom:18px}
-h1{text-align:center;margin:0 0 30px;font-size:34px;font-weight:700}
-.hello{font-size:21px;font-weight:700}
-.text{font-size:18px;letter-spacing:.01em;line-height:1.7}
-.info{margin:24px 0;padding:18px;background:#f1f5f8;border-radius:15px}.info p{margin:8px 0}
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;justify-content:center}.actions button{border:0;border-radius:12px;padding:14px 20px;font-weight:700;font-size:15px;cursor:pointer;background:#e5edf3;color:#243342}.actions button:hover{background:#d7e3eb}.actions button:disabled{opacity:.6}
-.msg{text-align:center;margin-top:18px;min-height:22px;font-weight:600}
-</style></head>
-<body><main class="card">
-<div class="badge">Invitation personnelle</div><h1>Une invitation pour toi</h1>
-<p class="hello">Salut Jacques !</p>
-<div class="text"><p>Je t’invite à venir passer un après-midi à Saint-Rémy-de-Provence, le <strong>dimanche 18 octobre</strong>, de <strong>14 h à 18 h</strong>.</p>
-<div class="info"><p>📍 <strong>Lieu :</strong> chez moi, à Saint-Rémy-de-Provence</p><p>🕑 <strong>Horaire :</strong> 14 h à 18 h</p><p>🎲 <strong>Au programme :</strong> jeux, discussions et un bon moment ensemble.</p></div>
-<p>Ça me ferait plaisir que tu puisses venir !</p></div>
-<div class="actions"><button onclick="answer('yes')">Je viens</button><button onclick="answer('no')">Je ne peux pas</button></div>
-<div class="msg" id="msg"></div></main>
-<script>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Une invitation pour Jacque</title>
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#e9e2d5,#f7f3eb);font-family:Georgia,"Times New Roman",serif;color:#342d25;display:flex;align-items:center;justify-content:center;padding:28px}.document{width:min(780px,100%);background:#fffaf0;border:1px solid #a99678;box-shadow:0 18px 50px rgba(60,48,30,.18);padding:58px 64px;position:relative}.document:before{content:"";position:absolute;inset:12px;border:1px solid #d2c4aa;pointer-events:none}.date{text-align:right;font-size:15px;font-style:italic;margin-bottom:35px}.crest{text-align:center;font-size:15px;letter-spacing:4px;margin-bottom:20px}h1{text-align:center;font-weight:normal;font-size:30px;margin:0 0 36px}.salutation{font-size:19px;font-weight:bold}p{font-size:18px;line-height:1.85;margin:0 0 22px}.signature{text-align:right;font-style:italic;margin-top:30px}.actions{position:relative;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:34px}.actions button{font-family:Georgia,serif;padding:12px 20px;border:1px solid #a99678;background:#f3ead8;color:#342d25;cursor:pointer;font-size:15px}.msg{text-align:center;margin-top:16px;min-height:22px;font-style:italic}@media(max-width:600px){.document{padding:42px 28px}.document:before{inset:8px}h1{font-size:25px}p{font-size:16px;line-height:1.7}}</style></head>
+<body><main class="document"><div class="crest">✧ ✦ ✧</div><div class="date">Saint-Rémy-de-Provence, le dimanche 18 octobre 2026</div><h1>Une invitation particulière</h1><p class="salutation">Cher Jacque,</p><p>Par la présente, j'ai le plaisir de vous convier à une après-midi en ma demeure de Saint-Rémy-de-Provence, le dimanche 18 octobre 2026, de 14 h à 18 h.</p><p>Cette réunion sera consacrée aux jeux, aux conversations et à quelques heures agréables partagées entre amis. Votre présence contribuerait à donner à cette rencontre tout son agrément.</p><p>Je vous serais reconnaissant de bien vouloir m'indiquer si vous pourrez honorer cette invitation.</p><p>Dans l'attente de votre réponse, veuillez recevoir mes salutations les plus distinguées.</p><div class="signature">Avec mes sentiments les meilleurs,<br>Ethan</div><div class="actions"><button onclick="answer('yes')">J'accepte l'invitation</button><button onclick="answer('no')">Je ne pourrai pas être présent</button></div><div class="msg" id="msg"></div></main><script>
 const API="https://invitation-api.ethan-galea1000.workers.dev",INVITE_ID="invitation_jacques_2026";
-async function answer(type){const bs=document.querySelectorAll("button");bs.forEach(b=>b.disabled=true);const m=document.getElementById("msg");m.textContent="Enregistrement de ta réponse…";try{const r=await fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer:type,name:"Jacques",count:1,note:"",custom:""})});const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");m.textContent=type==="yes"?"Merci Jacques, ta réponse a bien été enregistrée.":"Merci Jacques, j’ai bien enregistré ta réponse."; }catch(e){m.textContent="Impossible d'enregistrer la réponse : "+e.message;bs.forEach(b=>b.disabled=false)}}
+async function answer(type){const bs=document.querySelectorAll("button");bs.forEach(b=>b.disabled=true);const m=document.getElementById("msg");m.textContent="Enregistrement de ta réponse…";try{const r=await fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer:type,name:"Jacque",count:1,note:"",custom:""})});const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");m.textContent=type==="yes"?"Merci Jacque, ta réponse a bien été enregistrée.":"Merci Jacque, j’ai bien enregistré ta réponse."}catch(e){m.textContent="Impossible d'enregistrer la réponse : "+e.message;bs.forEach(b=>b.disabled=false)}}
 </script></body></html>
