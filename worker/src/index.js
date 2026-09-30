@@ -15,6 +15,14 @@ const json = (body, status = 200) =>
 
 const id = () => crypto.randomUUID();
 
+const DEFAULT_INVITATIONS = {
+  lettre_louise_2026: {inviteId:"lettre_louise_2026",title:"Louise",message:"Invitation personnelle de Louise",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+  lettre_laure_2026: {inviteId:"lettre_laure_2026",title:"Laure",message:"Invitation de Laure",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+  lettre_iris_2026: {inviteId:"lettre_iris_2026",title:"Iris",message:"Invitation de Iris",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+  rappel_iris_2026: {inviteId:"rappel_iris_2026",title:"Rappel Iris",message:"Rappel pour Iris",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+  rappel_louna_2026: {inviteId:"rappel_louna_2026",title:"Rappel Louna",message:"Rappel de mission pour Louna",date:"2026-08-19",time:"14:30",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
+};
+
 const clean = (x = {}) => {
   const keys = [
     "inviteId", "type", "title", "message", "date", "time", "place",
@@ -133,10 +141,31 @@ export default {
           return json({ error: "Nom et réponse requis." }, 400);
         }
 
-        const exists = await env.DB
+        let exists = await env.DB
           .prepare("SELECT invite_id FROM invitations WHERE invite_id = ?")
           .bind(inviteId)
           .first();
+
+        // Une réponse doit fonctionner même si l'admin n'a pas encore cliqué sur
+        // « Activer / préparer ». Pour les 5 invitations officielles, on recrée
+        // automatiquement la fiche minimale si elle a été supprimée.
+        if (!exists && DEFAULT_INVITATIONS[inviteId]) {
+          const invitation = DEFAULT_INVITATIONS[inviteId];
+          const now = Date.now();
+          await env.DB.prepare(
+            `INSERT INTO invitations
+              (invite_id, owner_token_hash, data_json, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?)
+             ON CONFLICT(invite_id) DO NOTHING`
+          ).bind(
+            invitation.inviteId,
+            "admin-password",
+            JSON.stringify(invitation),
+            now,
+            now
+          ).run();
+          exists = { invite_id: inviteId };
+        }
 
         if (!exists) {
           return json({ error: "Invitation introuvable." }, 404);
