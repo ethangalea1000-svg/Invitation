@@ -60,6 +60,6 @@ async function load(){
  }catch(e){$("list").innerHTML="<p class='hint'>"+esc(e.message)+"</p>";$("summary").innerHTML=""}
 }
 function formatDate(v){if(!v)return"Date inconnue";const d=new Date(v);return Number.isNaN(d.getTime())?"Date inconnue":d.toLocaleString("fr-FR")}
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",""":"&quot;","'":"&#039;"}[c]))}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 load();
 </script></body></html>
