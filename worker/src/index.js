@@ -141,34 +141,16 @@ export default {
           return json({ error: "Nom et réponse requis." }, 400);
         }
 
-        let exists = await env.DB
+        const exists = await env.DB
           .prepare("SELECT invite_id FROM invitations WHERE invite_id = ?")
           .bind(inviteId)
           .first();
 
-        // Une réponse doit fonctionner même si l'admin n'a pas encore cliqué sur
-        // « Activer / préparer ». Pour les 5 invitations officielles, on recrée
-        // automatiquement la fiche minimale si elle a été supprimée.
-        if (!exists && DEFAULT_INVITATIONS[inviteId]) {
-          const invitation = DEFAULT_INVITATIONS[inviteId];
-          const now = Date.now();
-          await env.DB.prepare(
-            `INSERT INTO invitations
-              (invite_id, owner_token_hash, data_json, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?)
-             ON CONFLICT(invite_id) DO NOTHING`
-          ).bind(
-            invitation.inviteId,
-            "admin-password",
-            JSON.stringify(invitation),
-            now,
-            now
-          ).run();
-          exists = { invite_id: inviteId };
-        }
-
+        // Une invitation supprimée reste réellement supprimée.
+        // Pour créer/réactiver une invitation, l'administrateur utilise
+        // « Activer / préparer les invitations » ou crée une nouvelle invitation.
         if (!exists) {
-          return json({ error: "Invitation introuvable." }, 404);
+          return json({ error: "Invitation introuvable ou désactivée." }, 404);
         }
 
         const responseId = id();
