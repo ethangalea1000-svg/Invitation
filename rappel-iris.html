@@ -21,8 +21,8 @@
 <p>Auriez-vous désormais quelque réponse à m'offrir ?<br>Votre présence serait pour moi un grand plaisir. ✨</p>
 </div>
 <div class="actions">
-<button onclick="answer('Oui, je serai présente ✨')">Oui, je serai présente ✨</button>
-<button onclick="answer('Non, je ne pourrai pas.')">Je ne pourrai pas</button>
+<button onclick="answer('yes',this)">Oui, je serai présente ✨</button>
+<button onclick="answer('no',this)">Je ne pourrai pas</button>
 </div>
 <div class="msg" id="msg"></div>
 </main>
@@ -30,12 +30,17 @@
 <script>
 const API="https://invitation-api.ethan-galea1000.workers.dev";
 const INVITE_ID="rappel_iris_2026";
-function answer(answer){
-  const name=prompt("Quel est ton prénom ?");
-  if(!name||!name.trim()) return;
-  fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer,name:name.trim(),count:1,note:"",custom:""})})
-  .then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");document.getElementById("msg").textContent="Merci, ta réponse a bien été enregistrée.";})
-  .catch(e=>{document.getElementById("msg").textContent="Impossible d'enregistrer la réponse pour le moment : "+e.message;});
+async function answer(type,button){
+ const name=prompt("Quel est ton prénom ?");
+ if(!name||!name.trim())return;
+ const buttons=document.querySelectorAll(".actions button, .buttons button");buttons.forEach(b=>b.disabled=true);
+ const msg=document.getElementById("msg")||document.getElementById("answer");
+ if(msg){msg.style.display="block";msg.textContent="Enregistrement de ta réponse…";}
+ try{
+  const r=await fetch(API+"/api/invitations/"+encodeURIComponent(INVITE_ID)+"/responses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({answer:type,name:name.trim(),count:1,note:"",custom:""})});
+  const j=await r.json();if(!r.ok)throw new Error(j.error||"Erreur");
+  if(msg){msg.style.display="block";msg.textContent=type==="yes"?"Merci, ta réponse a bien été enregistrée.":"Merci, ta réponse a bien été enregistrée.";}
+ }catch(e){if(msg){msg.style.display="block";msg.textContent="Impossible d'enregistrer la réponse : "+e.message;}buttons.forEach(b=>b.disabled=false);}
 }
 </script>
 </body>
