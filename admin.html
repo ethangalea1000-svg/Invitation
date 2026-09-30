@@ -97,7 +97,8 @@ function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&l
 
 async function api(path,opt={}){
   const headers={"Content-Type":"application/json","X-Admin-Password":password,...(opt.headers||{})};
-  const r=await fetch(API+path,{...opt,headers});
+  const fetchOptions={...opt,headers,cache:"no-store"};
+  const r=await fetch(API+path,fetchOptions);
   const j=await r.json().catch(()=>({}));
   if(!r.ok) throw new Error(j.error||"Erreur serveur");
   return j;
@@ -231,7 +232,25 @@ function exportCsv(){
 
 $("exportCsv").onclick=exportCsv;
 $("start").onclick=prepare;
-$("refresh").onclick=load;
+$("refresh").onclick=async()=>{
+  const btn=$("refresh");
+  const oldText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent="Actualisation…";
+  $("status").textContent="Actualisation des réponses…";
+  $("status").className="status";
+  try{
+    await load();
+    $("status").textContent="Réponses actualisées.";
+    $("status").className="status ok";
+  }catch(e){
+    $("status").textContent="Erreur : "+e.message;
+    $("status").className="status error";
+  }finally{
+    btn.disabled=false;
+    btn.textContent=oldText;
+  }
+};
 $("logout").onclick=logout;
 
 if(password){
