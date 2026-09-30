@@ -190,7 +190,7 @@ async function load(){
             '</div>'
           ).join("")
           :'<div class="empty">Aucune réponse pour le moment.</div>')+
-        '<div class="actions" style="margin-top:12px"><button class="secondary copy-link" onclick="copyInviteLink(\''+esc(i.inviteId)+'\')">Supprimer cette invitation et ses réponses</button></div>'+
+        '<div class="actions" style="margin-top:12px"><button class="secondary copy-link" onclick="copyInviteLink(\''+esc(i.inviteId)+'\',this)">Copier le lien</button><button class="secondary" onclick="deleteInvitation(\''+esc(i.inviteId)+'\')">Supprimer cette invitation et ses réponses</button></div>'+
         '</div>';
     }).join("")||'<div class="empty">Aucune invitation préparée.</div>';
   }catch(e){
