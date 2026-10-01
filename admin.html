@@ -90,7 +90,9 @@ const letters=[
 {inviteId:"lettre_laure_2026",title:"Laure",message:"Invitation de Laure",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
 {inviteId:"lettre_louise_2026",title:"Louise",message:"Invitation personnelle de Louise",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
 {inviteId:"invitation_amaranta_2026",title:"Amaranta",message:"Invitation personnelle de Amaranta",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
-{inviteId:"lettre_iris_2026",title:"Iris",message:"Invitation de Iris",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
+{inviteId:"lettre_iris_2026",title:"Iris",message:"Invitation de Iris",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"invitation_alaric_2026",title:"Alaric",message:"Invitation professionnelle d’Alaric",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true},
+{inviteId:"invitation_louna_2026",title:"Louna",message:"Invitation mission de Louna",date:"2026-10-18",time:"14:00",place:"Saint-Rémy-de-Provence",host:"Ethan",rsvp:true}
 ];
 
 let password="";
@@ -235,7 +237,9 @@ async function copyInviteLink(inviteId, button){
     lettre_louise_2026:'lettre-louise.html',
     lettre_laure_2026:'lettre-laure.html',
     invitation_amaranta_2026:'invitation-amaranta-2026.html',
-    lettre_iris_2026:'lettre-iris.html'
+    lettre_iris_2026:'lettre-iris.html',
+    invitation_alaric_2026:'invitation-alaric-2026.html',
+    invitation_louna_2026:'invitation-louna-2026.html'
   };
   const page=pageByInvite[inviteId];
   if(!page){
