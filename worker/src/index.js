@@ -159,7 +159,7 @@ export default {
       if (
         (request.method === "POST" && url.pathname === "/api/invitations") ||
         (request.method === "GET" && url.pathname === "/api/invitations") ||
-        (request.method === "DELETE" && /^\/api\/invitations\/[^/]+$/.test(url.pathname))
+        (request.method === "DELETE" && /^\/api\/invitations\/[^/]+(?:\/responses\/[^/]+)?$/.test(url.pathname))
       ) {
         const authError = await requireAdmin(request, env);
         if (authError) return authError;
